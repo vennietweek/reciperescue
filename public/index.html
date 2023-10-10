@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Prep</title>
+    <link rel="stylesheet" href="reciperescue.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inclusive+Sans">
+    <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav>
+      <div class="sidebar">
+        <div class="logo">
+          <span class="logo-name">Recipe Rescue</span>
+        </div>
+        <div class="sidebar-content">
+          <ul class="lists">
+            <li class="list">
+              <a href="#" id="homeNav" class="nav-link">
+                <i class="bx bx-home-alt icon"></i>
+                <span class="link">Home</span>
+              </a>
+            </li>
+            <li class="list">
+              <a href="#" id="viewQuestionNav" class="nav-link">
+                <i class="bx bx-file icon"></i>
+                <span class="link">View Questions</span>
+              </a>
+            </li>
+            <li class="list">
+              <a href="#" id="addQuestionNav" class="nav-link">
+                <i class="bx bx-edit icon"></i>
+                <span class="link">Add Question</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="content">
+      <div id="homepage" class="page"></div>
+    </div>
+
+    <div class="content">
+        <div id="addQuestions" class="page">
+          <h1>Add a Question</h1><br><br>
+          <form id ="addQuestionForm" onsubmit="event.preventDefault(); add_question_func(); return false;">
+            <input type="text" id="questionTitle" class="questionTitle" placeholder="Enter question"> <br>
+            <textarea id="questionDescription" name="description" placeholder="Enter description"></textarea> <br>
+            <select id="questionCategory">
+              <option value="" disabled selected hidden>Select Category</option>
+              <option value="General">General</option>
+              <option value="Motivation and Career Goals">Motivation and Career Goals</option>
+              <option value="Technical Competency">Technical Competency</option>
+              <option value="Behavioural or Situational">Behavioural or Situational</option>
+              <option value="Industry Knowledge">Industry Knowledge</option>
+              <option value="Culture Fit">Culture Fit</option>
+              <option value="Leadership">Leadership</option>
+              <option value="Salary and Compensation">Salary and Compensation</option>
+              <option value="Others">Others</option>
+            </select> &nbsp;&nbsp;
+            <select id ="questionComplexity">
+              <option value="" disabled selected hidden>Select Complexity</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select> <br>
+            <input type="submit" class ="submit" value="Submit">
+          </form>
+        </div>
+    </div>
+
+    <div class="content">
+      <div id = "list" class="page">
+        <h1>All Questions</h1><br><br>
+        <form id ="searchById" onsubmit="event.preventDefault(); searchById(); return false;">
+          <input type="text" id="search-box" placeholder="Search by ID"> &nbsp;&nbsp;
+          <input type="submit" class="search" value="Search"><br><br>
+         </form>
+          <table id="list_table">
+            <thead>
+              <tr>
+                <th class="id">ID</th>
+                <th class="questions">Question</th>
+                <th class="description">Description</th>
+                <th class="category">Category</th>
+                <th class="complexity">Complexity</th>
+                <th class="options">Options</th>
+              </tr>
+            </thead>
+            <tbody id="question_list_body"></tbody>
+          </table>
+      </div>
+    </div>
+
+    <div id="editQuestionModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Edit Question</h2>
+        <form id ="editQuestionForm">
+          <input type="text" id="editQuestionTitle" class="questionTitle" placeholder="Enter question"> <br>
+          <textarea id="editQuestionDescription" name="description" placeholder="Enter description"></textarea> <br>
+          <select id="editQuestionCategory">
+            <option value="General">General</option>
+            <option value="Motivation and Career Goals">Motivation and Career Goals</option>
+            <option value="Technical Competency">Technical Competency</option>
+            <option value="Behavioural or Situational">Behavioural or Situational</option>
+            <option value="Industry Knowledge">Industry Knowledge</option>
+            <option value="Culture Fit">Culture Fit</option>
+            <option value="Leadership">Leadership</option>
+            <option value="Salary and Compensation">Salary and Compensation</option>
+            <option value="Others">Others</option>
+          </select> &nbsp;&nbsp;
+          <select id ="editQuestionComplexity">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select> <br>
+          <input type="submit" class ="submit" value="Submit">
+        </form>
+      </div>
+    </div>
+
+    <script src="question_service.js" defer></script>
+  </body>
+</html>
