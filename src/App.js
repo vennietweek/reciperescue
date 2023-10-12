@@ -4,8 +4,7 @@ import Search from './Search.js';
 import 'font-awesome/css/font-awesome.min.css';
 import React, { useState } from 'react';
 import CustomSearchBox from './CustomSearchBox';
-import './CustomSearchBox.css'
-
+import NutritionTable from './NutritionTable';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -34,6 +33,7 @@ function App() {
         ))}
       </ul>
     </div>
+    <NutritionTable />
     </>
   );
 }

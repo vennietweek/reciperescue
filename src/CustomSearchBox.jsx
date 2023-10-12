@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
+import './CustomSearchBox.css'
 
 function CustomSearchBox() {
   const [dbingredients, setDBIngredients] = useState([]);
@@ -166,7 +167,7 @@ function CustomSearchBox() {
 
   return (
     <div>
-    <div className="custom-search-box">
+    <div id="shopping_list" className="custom-search-box">
       <input
         type="text"
         placeholder="Add ingredients..."

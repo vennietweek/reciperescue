@@ -1,0 +1,32 @@
+/* NutritionLabel.css */
+
+.nutrition-label {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 270px;
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    text-align: center; 
+  }
+  
+  .label-heading {
+    font-size: 1.5em; 
+    margin: 0;
+    padding: 0; 
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  .label-name {
+    font-weight: bold;
+    border-bottom: 1px dotted #ccc; 
+  }
+  
+  .label-amount {
+    text-align: right;
+    border-bottom: 1px dotted #ccc; 
+  }
+  
