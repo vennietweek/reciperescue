@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import CustomSearchBox from './CustomSearchBox';
 import NutritionTable from './NutritionTable';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { RecipeInfoPage } from './pages/RecipeInfoPage.js';
 
 function Home(){
   return(
@@ -41,6 +42,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home/>} />
         <Route path="/shopping_list" element={<ShoppingList/>} />
+        <Route path ="/recipe/:id" element={<RecipeInfoPage/>} />
       </Routes>
     </Router>
   );
