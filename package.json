@@ -1,18 +1,24 @@
 {
   "name": "recipe-rescue",
   "version": "0.1.0",
+  "proxy": "http://localhost:4000",
   "scripts": {
-    "start": "react-scripts start",
+    "start-react": "react-scripts start",
+    "start-server": "node \"server/server.js\"",
+    "start": "concurrently \"npm run start-react\" \"npm run start-server\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.5",
     "apollo-server-express": "^3.12.1",
     "express": "^4.18.2",
     "font-awesome": "^4.7.0",
     "fs": "^0.0.1-security",
     "graphql": "^16.8.1",
+    "graphql-tag": "^2.12.6",
+    "mongodb": "^6.1.0",
     "nodemon": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -32,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1"
   }
 }
