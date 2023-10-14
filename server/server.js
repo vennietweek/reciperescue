@@ -2,14 +2,14 @@ const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const { GraphQLScalarType } = require('graphql');
 const resolvers = require('./graphql/resolvers.js');
-const connectDB = require('./db/connectDB.js');
+const { connectDB, db } = require('./db/connectDB.js');
 const typeDefs = require('./graphql/schema.js');
 
 (async () => {
   try {
       await connectDB();
       console.log('MongoDB connected successfully');
-
+      
       const server = new ApolloServer({
           typeDefs,
           resolvers,
