@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
+import './CustomSearchBox.css'
 
-function CustomSearchBox() {
+function CustomSearchBox() { 
   const [dbingredients, setDBIngredients] = useState([]);
-  useEffect(() => {
+  useEffect(() => { //setting up a "database" of ingredients
     setDBIngredients([
       {
         dbingredient: 'Apple',
@@ -26,7 +27,7 @@ function CustomSearchBox() {
       },
     ]);
   }, []);
-  useEffect(() => {
+  useEffect(() => { //setting up "database" of ingredients added from recipe page
     setListings([
       {
         ingredient: 'Apple',
@@ -64,7 +65,7 @@ function CustomSearchBox() {
   const inputRef = useRef(null);
 
   useEffect(() => { 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event) => { //handling clicks outside of add ingredients search bar
       if (
         inputRef.current &&
         !inputRef.current.contains(event.target) &&
@@ -82,41 +83,41 @@ function CustomSearchBox() {
     };
   }, []);
 
-  const handleSearch = (e) => {
+  const handleSearch = (e) => { //'add ingredients search bar'
     const query = e.target.value;
     setUserInput(query);
     const filtered = dbingredients.filter(item => item['dbingredient'].toLowerCase().includes(query.toLowerCase()));
     const filteredIngredients = filtered.map(item => item['dbingredient']);
-    setFilteredIngredients([query, ...filteredIngredients.slice(0, 5)]);
+    setFilteredIngredients([query, ...filteredIngredients.slice(0, 5)]); //dropdown suggestion for 'add ingredients search bar' to suggest ingredients in "database"
   };
 
-  const handleItemClick = (ingredient) => {
+  const handleItemClick = (ingredient) => { //handling selected ingredient
     setSelectedIngredient(ingredient);
     setShowForm(true);
-    setShowSuggestions(false);
+    setShowSuggestions(false); //turn off suggestions after user selected ingredient
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e) => {  //allow user input details of the ingredients they want to add
     e.preventDefault();
-    const price = e.target.price.value;
-    const quantity = Number(e.target.quantity.value);
-    const imageUploaded = e.target.image.files[0];
-    const imageLink = null;
-    const id = uuidv4();
-    if (!imageUploaded) {
+    const price = e.target.price.value; //user input of ingredient price
+    const quantity = Number(e.target.quantity.value); //user input of ingredient quantity
+    const imageUploaded = e.target.image.files[0]; //user input of ingredient image
+    const imageLink = null; 
+    const id = uuidv4(); //generated id for user input of ingredient
+    if (!imageUploaded) { //handling error for no image uploaded
       alert('Please select an image.');
       return;
     } 
-    if (!price) {
+    if (!price) { //handling error for no price uploaded
       alert('Please enter price.');
       return;
     }
-    if (!quantity) {
+    if (!quantity) { //handling error for no quantity uploaded
       alert('Please enter quantity.');
       return;
     }
 
-    const newListing = { 
+    const newListing = {  //creation of a new listing
       ingredient: selectedIngredient,
       price,
       quantity,
@@ -129,16 +130,16 @@ function CustomSearchBox() {
     setShowForm(false);
   };
 
-  const toggleDropdown = () => {
+  const toggleDropdown = () => { //there would always be a dropdown of suggestion when user clicks on add ingredients search bar
     setShowSuggestions(true);
   };
 
-  const deleteIngredient = (id) => {
+  const deleteIngredient = (id) => { //handling delete ingredients by id
     const newListings = listings.filter((listing) => listing.id !== id);
     setListings(newListings);
   };
 
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (id) => { //enable user to decrease quantity of added ingredient 
     setListings((ogListings) =>
       ogListings.map((listing) => {
         if (listing.id === id) {
@@ -149,7 +150,7 @@ function CustomSearchBox() {
     );
   };
 
-  const increaseQuantity = (id) => {
+  const increaseQuantity = (id) => { //enable user to increase quantity of added ingredient
     setListings((ogListings) =>
       ogListings.map((listing) => {
         if (listing.id === id) {
@@ -160,14 +161,19 @@ function CustomSearchBox() {
     );
   };
 
-  const clearListings = () => {
+  const clearListings = () => { //enable user clear all ingredients in shopping list
     setListings([]);
   };
 
+  const totalValue = listings.reduce((total, listing) => total + listing.price * listing.quantity, 0);
+  const roundedTotalValue = totalValue.toFixed(2);
+
+
   return (
     <div>
-    <div className="custom-search-box">
-      <input
+    <div id="shopping_list" className="custom-search-box">
+      <div id="add-ingredient-container">
+      <input //input for add ingredients search bar
         type="text"
         placeholder="Add ingredients..."
         value={userInput}
@@ -175,7 +181,7 @@ function CustomSearchBox() {
         onClick={toggleDropdown}
         ref={inputRef}
       />
-      {showSuggestions && userInput && (
+      {showSuggestions && userInput && ( //show suggestions of existing ingredients in database as well as user input in the dropdown
         <ul className="custom-dropdown" ref={dropDownRef}>
           {filteredIngredients.map((ingredient, index) => (
             <li key={index} onClick={() => handleItemClick(ingredient)}>
@@ -184,7 +190,8 @@ function CustomSearchBox() {
           ))}
         </ul>
       )}
-      {showForm && selectedIngredient && (
+      </div>
+      {showForm && selectedIngredient && ( //accept user input of details of selected ingredient
         <div className="custom-form">
           <h3>{selectedIngredient}</h3>
           <form onSubmit={handleFormSubmit}>
@@ -225,6 +232,7 @@ function CustomSearchBox() {
         </div>
       </div>
     ))}
+    <p>Total Price: ${roundedTotalValue}</p>
   </div>
 </div>
   );
