@@ -5,8 +5,18 @@ import 'font-awesome/css/font-awesome.min.css';
 import React, { useState } from 'react';
 import CustomSearchBox from './CustomSearchBox';
 import NutritionTable from './NutritionTable';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-function App() {
+function Home(){
+  return(
+    <>
+      <Navbar />
+      <Search />
+    </>
+  );
+}
+
+function ShoppingList(){
   const [items, setItems] = useState([]);
   const handleToggleItem = (index) => {
     const updatedItems = [...items];
@@ -14,27 +24,25 @@ function App() {
     setItems(updatedItems);
   };
 
-  return (
+  return(
     <>
       <Navbar />
-      <Search />
       <div className="shopping-list">
-      <h1>Shopping List</h1>
-      <CustomSearchBox />
-      <ul>
-        {items.map((item, index) => (
-          <li
-            key={index}
-            className={item.completed ? 'completed' : ''}
-            onClick={() => handleToggleItem(index)}
-          >
-            {item.text}
-          </li>
-        ))}
-      </ul>
-    </div>
-    <NutritionTable />
+        <h1>Shopping List</h1>
+        <CustomSearchBox />
+      </div>
     </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/shopping_list" element={<ShoppingList/>} />
+      </Routes>
+    </Router>
   );
 }
 
