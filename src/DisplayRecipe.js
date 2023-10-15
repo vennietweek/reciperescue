@@ -62,12 +62,12 @@ function DisplayRecipe(props) {
   }, [props.searchList])
 
   return (
-    <div class="recipe-display">
-        <h3 class="display-title">{displayTitle}</h3>
-        <div class="recipe-container">
+    <div className="recipe-display">
+        <h3 className="display-title">{displayTitle}</h3>
+        <div className="recipe-container">
             {recipeList.map((recipe, index) => (
-                <div class="recipe" key={index} onClick=''>
-                    <a href={recipe.link}><img class="img-thumbnail rounded mx-auto" src={recipe.imageURL} alt={recipe.name} /></a>
+                <div className="recipe" key={index}>
+                    <a href={recipe.link}><img className="img-thumbnail rounded mx-auto" src={recipe.imageURL} alt={recipe.name} /></a>
                     <h2>{recipe.name}</h2>
                     <p>Timing: {recipe.timing} minutes</p>
                 </div>

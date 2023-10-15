@@ -24,8 +24,8 @@ const typeDefs = require('./graphql/schema.js');
 
       server.applyMiddleware({ app, path: '/graphql' });
 
-      app.listen(4000, function () {
-          console.log('Server started on port 4000');
+      app.listen(3000, function () {
+          console.log('Server started on port 3000');
       });
 
   } catch (err) {

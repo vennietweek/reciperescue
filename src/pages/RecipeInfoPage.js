@@ -1,7 +1,7 @@
 import '../App.css';
 import Navbar from '../Navbar.js';
 import 'font-awesome/css/font-awesome.min.css';
-import React, { useState } from 'react';
+import React from 'react';
 import '../styles/recipeInfo.css';
 import { useParams } from 'react-router-dom';
 import { RecipeInfo } from '../containers/RecipeInfo.jsx';
@@ -15,7 +15,7 @@ export function RecipeInfoPage (){
     let { id } = useParams();
     const recipe = recipes.find(recipes => recipes.id === id);
     if (!recipe) {
-        return <div>Recipe not found</div>;
+        return <div>To be linked in the future</div>;
     }
     return(
         <>
