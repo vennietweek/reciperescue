@@ -21,7 +21,7 @@ export function RecipeInfo (props) {
       <span><FontAwesomeIcon icon={faFire} style={{color: "grey", fontSize:"20px"}} />&nbsp;&nbsp;{recipe.calories} calories </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <span><FontAwesomeIcon icon={faConciergeBell} style={{color: "grey", fontSize:"20px"}} />&nbsp;&nbsp;Serves {recipe.servingSize} </span>
       <br/><br/>
-      <Chip color="tertiary" disabled={false} size="medium" label={recipe.type} />
+      <Chip color="tertiary" disabled={false} size="medium" label={recipe.type} />&nbsp;&nbsp;&nbsp;&nbsp;
       {recipe.isVegetarian === true && (
         <>
           <Chip color="info" disabled={false} size="medium" label="Vegetarian" />
@@ -42,7 +42,7 @@ export function RecipeInfo (props) {
       )}
       {recipe.isGlutenFree === true && (
         <>
-          <Chip color="warning" disabled={false} size="medium" label="Gluten Free" />
+          <Chip color="primary" disabled={false} size="medium" label="Gluten Free" />
           &nbsp;&nbsp;&nbsp;&nbsp;
         </>
       )}
