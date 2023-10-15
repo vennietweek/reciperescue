@@ -1,6 +1,7 @@
 # System Design
 
-Our application specifications can be found here: [IP-Recipe Rescue PRD-151023-082949.pdf](https://github.com/IT5007-2310/course-project-reciperescue/files/12909001/IP-Recipe.Rescue.PRD-151023-082949.pdf)
+Our application specifications can be found here: [Recipe Rescue PRD.pdf](https://github.com/IT5007-2310/course-project-reciperescue/files/12909002/Recipe.Rescue.PRD.pdf)
+
 
 # Lo-fi wireframes
 
