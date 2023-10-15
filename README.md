@@ -9,7 +9,7 @@ We have decided to start with lo-fi wireframes, focusing on the layout of the co
 
 The wireframes can be viewed here: https://whimsical.com/recipe-rescue-lofi-wireframes-FFpDajuwzxosZFSmmSsHrL
 
-We are still in the process of refining our designs.
+We are still in the process of refining our designs and choosing between possible layouts.
 
 # Key Features
 
