@@ -1,6 +1,6 @@
 # System Design
 
-Our application specifications can be found here: https://mcomp2023.atlassian.net/l/cp/NH4M1Wqy
+Our application specifications can be found here: [IP-Recipe Rescue PRD-151023-082949.pdf](https://github.com/IT5007-2310/course-project-reciperescue/files/12909001/IP-Recipe.Rescue.PRD-151023-082949.pdf)
 
 # Lo-fi wireframes
 
