@@ -8,6 +8,7 @@ import { RecipeInfo } from '../containers/RecipeInfo.jsx';
 import { RecipeIngredients } from '../containers/RecipeIngredients.jsx';
 import { RecipeInstructions } from '../containers/RecipeInstructions.jsx';
 import { RecipeNutrition } from '../containers/RecipeNutrition.jsx';
+import { RecipeTips } from '../containers/RecipeTips.jsx'
 import recipes from '../sampleData/sampleRecipes.js';
 
 export function RecipeInfoPage (){
@@ -23,6 +24,7 @@ export function RecipeInfoPage (){
             <RecipeInfo recipe={recipe} />
             <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} />
             <RecipeInstructions instructions={recipe.instructions} />
+            <RecipeTips tips={recipe.tips} />
         </div>
         </>
     )
