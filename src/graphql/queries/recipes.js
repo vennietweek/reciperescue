@@ -1,12 +1,12 @@
 import gql from 'graphql-tag';
 
-export const GET_ALL_RECIPES = gql`
+export const GET_RECIPE_BY_ID = gql`
     query {
-        getAllRecipes {
+        getRecipe {
             id
             title
             image
-            ...
         }
     }
 `;
+
