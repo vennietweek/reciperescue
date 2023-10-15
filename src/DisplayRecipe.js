@@ -32,11 +32,13 @@ const popularRecipes = [
   ];
 
 function DisplayRecipe(props) {
-  const [displayTitle, setDisplayTitle] = useState('Popular Recipe')
+  const [displayTitle, setDisplayTitle] = useState('Popular Recipe');
   const [recipeList, setRecipeList] = useState(popularRecipes);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if(props.searchList.length !== 0) {
+        setIsLoading(true)
         setDisplayTitle('Search Results');
         // API call here
         var api_call = api_url.concat(props.searchList.join("%20"));
@@ -57,9 +59,18 @@ function DisplayRecipe(props) {
               counter += 1;
             })
             setRecipeList(rList);
+            setIsLoading(false);
           });
     }
   }, [props.searchList])
+
+  if (isLoading) {
+    return (
+      <div className="recipe-display">
+        <h3 className="display-title">Searching for recipes...</h3>
+    </div>
+    )
+  }
 
   return (
     <div className="recipe-display">
