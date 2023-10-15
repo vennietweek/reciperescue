@@ -1,8 +1,14 @@
-**Specifications**: https://mcomp2023.atlassian.net/l/cp/NH4M1Wqy
+# System Design
 
-**Lo-fi wireframes**: https://whimsical.com/recipe-rescue-lofi-wireframes-FFpDajuwzxosZFSmmSsHrL
+Our application specifications can be found here: https://mcomp2023.atlassian.net/l/cp/NH4M1Wqy
 
-**Key Features**
+# Lo-fi wireframes
+
+We have decided to start with lo-fi wireframes, focusing on the layout of the components and UX rather than UI. 
+
+The wireframes can be viewed here: https://whimsical.com/recipe-rescue-lofi-wireframes-FFpDajuwzxosZFSmmSsHrL
+
+# Key Features
 
 1. **Display and Search for Recipes**: Display popular recipes and search for them based on ingredients.
 
