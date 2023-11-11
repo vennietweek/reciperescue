@@ -9,8 +9,41 @@ import { RecipeIngredients } from '../containers/RecipeIngredients.jsx';
 import { RecipeInstructions } from '../containers/RecipeInstructions.jsx';
 import { RecipeNutrition } from '../containers/RecipeNutrition.jsx';
 import { RecipeTips } from '../containers/RecipeTips.jsx'
-import recipes from '../sampleData/sampleRecipes.js';
 import axios from 'axios';
+
+const sampleRecipe = {
+    id: "1",
+    title: "Spaghetti Carbonara",
+    description: "Indulge in the creamy delight of Spaghetti Carbonara! This classic Italian pasta dish features al dente spaghetti tossed with crispy pancetta, eggs, Parmesan cheese, and a touch of black pepper. The result? A rich and satisfying masterpiece that's ready in no time. Perfect for a quick weeknight dinner or a cozy date night at home. Buon appetito!",
+    type: "Lunch",
+    image: "https://upload.wikimedia.org/wikipedia/commons/3/33/Espaguetis_carbonara.jpg",
+    ingredients: [
+        { id: "1", name: "Spaghetti" },
+        { id: "2", name: "Eggs" },
+        { id: "3", name: "Pecorino cheese" },
+        { id: "4", name: "Guanciale" },
+        { id: "5", name: "Black pepper" }
+    ],
+    ingredientAmounts: ["200g", "2", "50g", "100g", "1 tsp"],
+    isVegetarian: false,
+    isVegan: false,
+    isDairyFree: false,
+    isGlutenFree: false,
+    totalCookingTime: 30,
+    prepTime: 15,
+    cookingTime: 15,
+    servingSize: 4,
+    calories: 600,
+    instructions: [
+        "Boil the spaghetti until al dente.",
+        "In a bowl, whisk eggs and mix with cheese.",
+        "Cook guanciale in a pan until crisp.",
+        "Add spaghetti to pan with guanciale.",
+        "Remove from heat, and quickly mix in egg and cheese mixture.",
+        "Serve immediately with a sprinkle of black pepper."
+    ],
+    tips: ["Use fresh eggs for a creamy sauce.", "Avoid using bacon as it's too smoky."]
+  };
 
 export function RecipeInfoPage (){
     let { id } = useParams();
@@ -23,9 +56,9 @@ export function RecipeInfoPage (){
                 setRecipe(response.data.recipe);
             } catch (error) {
                 console.error(error);
+                setRecipe(sampleRecipe);
             }
         }
-
        fetchRecipe();
     }, []); 
 
@@ -37,13 +70,12 @@ export function RecipeInfoPage (){
             <RecipeInfo recipe={recipe} />
             <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} />
             <RecipeInstructions instructions={recipe.instructions} />
-            <RecipeTips tips={recipe.tips} />
+            <RecipeTips tips={recipe} />
         </div>) : (
-        <div className='recipe-information-page'>
-            <Navbar />
-            <h1>Loading...</h1>
+        <div className='recipe-information-page d-flex justify-content-center align-items-center' style={{ height: '100vh' }}>
+          <i className="fa fa-spinner fa-spin fa-3x fa-fw" aria-hidden="true"></i>
         </div>
-        )}
+      )}
         </>
     )
   }

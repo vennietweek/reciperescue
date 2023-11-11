@@ -7,6 +7,11 @@ const cors = require('cors');
 // const typeDefs = require('./graphql/schema.js');
 const { MongoClient } = require('mongodb');
 const axios = require('axios');
+const { OpenAI } = require('openai');
+
+const openai = new OpenAI({
+  apiKey: "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",
+});
 
 // const mongoURI = 'mongodb://localhost:27017/recipeRescue';
 // const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -112,6 +117,20 @@ app.get('/api/recipeGet', async (req, res) => {
       console.error(error);
       res.status(500).json({ success: false, message: 'Error retrieving data' });
     }
+});
+
+app.post('/api/get-chat-completion', async (req, res) => {
+  console.log(req.body);
+  try {
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: req.body.message }]
+    });
+    
+    res.json(completion.data);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.listen(4000, function () {

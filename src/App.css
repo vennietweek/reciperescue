@@ -1,6 +1,5 @@
 * {
-  font-family: 'Trebuchet MS', Arial, sans-serif;
-  font-weight: bold;
+  font-family: 'Karla', sans-serif;
 }
 
 .shopping-list {
@@ -28,4 +27,9 @@ li {
 
 .completed {
   text-decoration: line-through;
+}
+
+.navbar {
+  font-family: 'Karla', sans-serif; 
+  font-weight: 700; 
 }

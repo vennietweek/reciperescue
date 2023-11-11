@@ -1,4 +1,3 @@
-body
 
 main {
     padding: 20px;
@@ -75,4 +74,29 @@ input[type="text"], input[type="number"], select {
 
 .instructions ol {
     padding-left: 20px;
+}
+
+.custom-checkbox .form-check {
+    display: flex;
+    align-items: center;
+}
+
+.custom-checkbox .form-check-input {
+    margin-right: 8px; 
+    margin-top: 0;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px; 
+}
+
+.add-to-list-button {
+    margin-left: auto;
+}
+
+.ml-2 {
+    margin-left: 14px;
 }
