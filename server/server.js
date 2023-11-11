@@ -1,11 +1,12 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 // const { ApolloServer } = require('apollo-server-express');
 // const { GraphQLScalarType } = require('graphql');
 // const resolvers = require('./graphql/resolvers.js');
 // const { connectDB, db } = require('./db/connectDB.js');
 // const typeDefs = require('./graphql/schema.js');
-const { MongoClient } = require('mongodb');
+// const { MongoClient } = require('mongodb');
 const axios = require('axios');
 const { OpenAI } = require('openai');
 
@@ -34,6 +35,64 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
+
+mongoose.connect('mongodb://localhost:27017/mydatabase', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const IngredientSchema = new mongoose.Schema({
+  dbingredient: String,
+  price: String,
+  quantity: String,
+  image: String,
+});
+
+const Item = mongoose.model('shoppinglist', IngredientSchema);
+
+app.post('/api/ingredients', async (req, res) => {
+  const { dbingredient, price, quantity, image } = req.body;
+  const newItem = new Item({ dbingredient, price, quantity, image });
+  await newItem.save();
+  res.json(newItem);
+});
+
+app.get('/api/ingredients', async (req, res) => {
+  const items = await Item.find();
+  res.json(items);
+});
+
+const RecipeSchema = new mongoose.Schema({
+    id: String,
+    title: String,
+    image: String,
+    ingredients: [IngredientSchema],
+    ingredientAmounts: [String],
+    isVegetarian: Boolean,
+    isVegan: Boolean,
+    isDairyFree: Boolean,
+    totalCookingTime: Number,
+    prepTime: Number,
+    cookingTime: Number,
+    calories: Number,
+    instructions: [String],
+    tips: [String],
+    });
+  
+  const Recipe = mongoose.model('recipe', RecipeSchema);
+  
+  app.post('/api/recipes', async (req, res) => {
+    const { dbingredient, price, quantity, image } = req.body;
+    const newItem = new Recipe({ dbingredient, price, quantity, image });
+    await newItem.save();
+    res.json(newItem);
+  });
+  
+  app.get('/api/recipes', async (req, res) => {
+    const items = await Recipe.find();
+    console.log('Retrieved items:', items); // Add this line for debugging
+    res.json(items);
+  });
 
 app.get('/api/randomRecipes', async (req, res) => {
     try {

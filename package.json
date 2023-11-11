@@ -1,7 +1,6 @@
 {
   "name": "recipe-rescue",
   "version": "0.1.0",
-  "proxy": "http://localhost:3000",
   "scripts": {
     "start-react": "react-scripts start",
     "start-server": "nodemon \"server/server.js\"",
@@ -29,6 +28,7 @@
     "fs": "^0.0.1-security",
     "graphql": "^16.8.1",
     "graphql-tag": "^2.12.6",
+    "http-proxy-middleware": "^2.0.6",
     "mongodb": "^6.1.0",
     "mongodb-memory-server": "^9.0.1",
     "mongoose": "^8.0.0",
