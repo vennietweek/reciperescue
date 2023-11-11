@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import './Search.css';
-import DisplayRecipe from './DisplayRecipe.js';
+import '../styles/Search.css';
+import DisplayRecipe from '../containers/DisplayRecipeList.js';
 
 function Search() {
   const [searchText, setSearchText] = useState('');

@@ -1,5 +1,5 @@
 import '../App.css';
-import Navbar from '../Navbar.js';
+import Navbar from '../containers/Navbar.js';
 import 'font-awesome/css/font-awesome.min.css';
 import React, { useState, useEffect } from 'react';
 import '../styles/recipeInfo.css';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './DisplayRecipe.css';
+import '../styles/DisplayRecipeList.css';
 import axios from 'axios';
 
 function DisplayRecipe(props) {

@@ -1,6 +1,6 @@
 import './App.css';
-import Navbar from './Navbar.js';
-import Search from './Search.js';
+import Navbar from './containers/Navbar.js';
+import Search from './pages/Search.js';
 import 'font-awesome/css/font-awesome.min.css';
 import React, { useState } from 'react';
 import CustomSearchBox from './CustomSearchBox';
