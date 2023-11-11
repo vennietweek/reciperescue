@@ -41,7 +41,7 @@ function Search() {
             <div className="search-bar">
                 <div className="ingredient-container" >
                     {ingredients.map((ingredient, index) => (
-                        <div className="ingredient" key={index} readonly><p>{ingredient}</p> <i className="fa fa-times fa-1x" onClick={() => deleteBubble(index)}></i></div>
+                        <div className="ingredient" key={index} readOnly><p>{ingredient}</p> <i className="fa fa-times fa-1x" onClick={() => deleteBubble(index)}></i></div>
                     ))}
                     <input type="text" value={searchText} onChange={handleInputChange} onKeyDown={handleInputKeyPress} placeholder="ingredients..." ref={inputRef} />
                     {/* <i class="fa fa-search fa-1x search-icon"></i>    */}

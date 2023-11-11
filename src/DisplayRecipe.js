@@ -1,65 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import './DisplayRecipe.css';
-
-const api_url = 'https://api.edamam.com/api/recipes/v2?type=public&app_id=3fd01beb&app_key=2dd8d7f3e5301d6d4f8bf91255504595%09&imageSize=REGULAR&field=label&field=image&field=totalTime&q='
-
-const popularRecipes = [
-    {
-      name: 'Spaghetti Carbonara',
-      imageURL: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Espaguetis_carbonara.jpg',
-      timing: 30,
-      link: '/recipe/1'
-    },
-    {
-      name: 'Chicken Alfredo',
-      imageURL: 'https://www.foodnetwork.com/content/dam/images/food/fullset/2015/9/15/1/FNK_Chicken-Fettucine-Alfredo_s4x3.jpg',
-      timing: 25,
-      link: '/recipe/2'
-    },
-    {
-      name: 'Penne Arrabiata',
-      imageURL: 'https://spoonacular.com/recipeImages/655573-556x370.jpg',
-      timing: 45,
-      link: '/recipe/3'
-  },
-  {
-      name: 'Farfalle with Shrimps, Tomatoes Basil Sauce',
-      imageURL: 'https://spoonacular.com/recipeImages/642594-556x370.jpg',
-      timing: 45,
-      link: '/recipe/4'
-  },
-    // Add more recipes here
-  ];
+import axios from 'axios';
 
 function DisplayRecipe(props) {
   const [displayTitle, setDisplayTitle] = useState('Popular Recipe');
-  const [recipeList, setRecipeList] = useState(popularRecipes);
+  const [recipeList, setRecipeList] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchRandomList = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/randomRecipes');
+            console.log(response.data.results);
+            setRecipeList(response.data.results);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    fetchRandomList();
+  }, []); 
 
   useEffect(() => {
     if(props.searchList.length !== 0) {
         setIsLoading(true)
         setDisplayTitle('Search Results');
         // API call here
-        var api_call = api_url.concat(props.searchList.join("%20"));
-        console.log(api_call);
-        fetch(api_call)
-          .then(response => response.json())
-          .then(data => {
-            var rList = [];
-            var counter = 3;
-            data['hits'].forEach((r) => {
-              var recipe = {
-                name: r['recipe']['label'],
-                imageURL: r['recipe']['image'],
-                timing: r['recipe']['totalTime'],
-                link: 'recipe/'.concat(counter)
-              };
-              rList.push(recipe);
-              counter += 1;
-            })
-            setRecipeList(rList);
+        axios.get(`http://localhost:4000/api/recipeSearch?ingredients=$`.concat(props.searchList.toString()))
+          .then(response => {
+            setRecipeList(response.data.results);
             setIsLoading(false);
+          })
+          .catch(error => {
+            console.error(error);
           });
     }
   }, [props.searchList])
@@ -73,18 +46,23 @@ function DisplayRecipe(props) {
   }
 
   return (
+    <>
+    {recipeList ? (
     <div className="recipe-display">
         <h3 className="display-title">{displayTitle}</h3>
         <div className="recipe-container">
-            {recipeList.map((recipe, index) => (
-                <div className="recipe" key={index}>
-                    <a href={recipe.link}><img className="img-thumbnail rounded mx-auto" src={recipe.imageURL} alt={recipe.name} /></a>
+            {recipeList.map((recipe) => (
+                <div className="recipe" key={recipe.id}>
+                    <a href={recipe.link}><img className="img-thumbnail rounded mx-auto" src={recipe.image} alt={recipe.name} /></a>
                     <h2>{recipe.name}</h2>
-                    <p>Timing: {recipe.timing} minutes</p>
                 </div>
             ))}
         </div>
-    </div>
+    </div>) : (
+      <div className="recipe-display">
+        <h3 className="display-title">Loading random popular recipes...</h3>
+    </div>)}
+    </>
   );
 }
 

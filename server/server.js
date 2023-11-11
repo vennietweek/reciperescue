@@ -1,35 +1,119 @@
 const express = require('express');
-const { ApolloServer } = require('apollo-server-express');
-const { GraphQLScalarType } = require('graphql');
-const resolvers = require('./graphql/resolvers.js');
-const { connectDB, db } = require('./db/connectDB.js');
-const typeDefs = require('./graphql/schema.js');
+const cors = require('cors');
+// const { ApolloServer } = require('apollo-server-express');
+// const { GraphQLScalarType } = require('graphql');
+// const resolvers = require('./graphql/resolvers.js');
+// const { connectDB, db } = require('./db/connectDB.js');
+// const typeDefs = require('./graphql/schema.js');
+const { MongoClient } = require('mongodb');
+const axios = require('axios');
 
-(async () => {
-  try {
-      await connectDB();
-      console.log('MongoDB connected successfully');
-      
-      const server = new ApolloServer({
-          typeDefs,
-          resolvers,
+// const mongoURI = 'mongodb://localhost:27017/recipeRescue';
+// const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+// client.connect();
+// console.log('Connected to MongoDB at', mongoURI);
+// const db = client.db('recipeRescue')
+
+// const newRecipe = new recipe({
+//     id: r.id,
+//     name: r.title,
+//     image: r.image,
+//       servings: r.servings,
+//       readyInMinutes: r.readyInMinutes,
+//       analyzedInstructions: r.analyzedInstructions,
+//       extendedIngredients: r.extendedIngredients,
+//   });
+
+const app = express();
+
+app.use(cors());
+
+app.use(express.json());
+
+app.get('/api/randomRecipes', async (req, res) => {
+    try {
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?apiKey=22c4658fa9554f018d280795e9459795&number=8');
+
+      results = apiResponse.data.recipes.map((recipe) => {
+        return {
+          id: recipe.id,
+          name: recipe.title,
+          image: recipe.image,
+          link: "/recipe/".concat(recipe.id),
+        };
+      });
+      console.log(results);
+
+      res.json({ results });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Error retrieving data' });
+    }
+});
+
+app.get('/api/recipeSearch', async (req, res) => {
+    try {
+      const ingredients = req.query.ingredients;
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?apiKey=22c4658fa9554f018d280795e9459795&ranking=1&limitLicense=true&ingredients='.concat(ingredients));
+
+      results = apiResponse.data.map((recipe) => {
+        return {
+          id: recipe.id,
+          name: recipe.title,
+          image: recipe.image,
+          link: "/recipe/".concat(recipe.id),
+        };
       });
 
-      // Start the Apollo server
-      await server.start();
+      res.json({ results });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Error retrieving data' });
+    }
+});
 
-      const app = express();
+app.get('/api/recipeGet', async (req, res) => {
+    try {
+      const id = req.query.id;
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information?apiKey=22c4658fa9554f018d280795e9459795');
+      const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json?apiKey=22c4658fa9554f018d280795e9459795');
 
-      app.use(express.static('public'));
+      const data = apiResponse.data;
+      const nutrition = apiResponse2.data;
 
-      server.applyMiddleware({ app, path: '/graphql' });
+      let counter = 0;
 
-      app.listen(3000, function () {
-          console.log('Server started on port 3000');
-      });
+      recipe = {
+        id: data.id,
+        title: data.title,
+        image: data.image,
+        servingSize: data.servings,
+        description: data.summary.split('.')[0].replace(/<[^>]*>/g, '') + '.',
+        isVegetarian: data.vegetarian,
+        isVegan: data.vegan,
+        isDairyFree: data.dairyFree,
+        isGlutenFree: data.glutenFree,
+        totalCookingTime: data.readyInMinutes,
+        calories: nutrition.calories,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat,
+        protein: nutrition.protein,
+        instructions: data.instructions.replace(/<[^>]*>/g, '').split(/[.\n]/).filter((instruction) => {return instruction !== ''}),
+        ingredients: data.extendedIngredients.map((ingredient) => {
+            counter++;
+            return {id: counter, name: ingredient.originalName};            
+        }),
+        ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
+        tips: "",
+      };
 
-  } catch (err) {
-      console.error('Error:', err.message);
-      process.exit(1);
-  }
-})();
+      res.json({ recipe });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Error retrieving data' });
+    }
+});
+
+app.listen(4000, function () {
+    console.log('Server started on port 4000');
+});

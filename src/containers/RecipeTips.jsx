@@ -9,11 +9,11 @@ export function RecipeTips(props) {
       <div className="recipe-tips-container">
         <h4>Recipe Tips</h4>
         <ol>
-            {tips.map((tip, index) => (
+            {tips ? tips.map((tip, index) => (
               <li key={index}>
                 {tips[index]} {tip}
                   </li>
-              ))}
+              )) : <li>There are no tips for this recipe</li>}
         </ol>
         </div>
       </div>

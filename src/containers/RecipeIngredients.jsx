@@ -4,6 +4,7 @@ import '../styles/recipeInfo.css';
 
 export function RecipeIngredients(props) {
   const { ingredients, ingredientAmounts } = props;
+  console.log(ingredients);
     return (
       <>
       <div className="recipe-info-container">
