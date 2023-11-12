@@ -2,13 +2,13 @@ import '../App.css';
 import Navbar from '../containers/Navbar.js';
 import 'font-awesome/css/font-awesome.min.css';
 import React, { useState, useEffect } from 'react';
-import '../styles/recipeInfo.css';
+import '../styles/RecipeInfo.css';
 import { useParams } from 'react-router-dom';
-import { RecipeInfo } from '../containers/RecipeInfo.jsx';
-import { RecipeIngredients } from '../containers/RecipeIngredients.jsx';
-import { RecipeInstructions } from '../containers/RecipeInstructions.jsx';
-import { RecipeNutrition } from '../containers/RecipeNutrition.jsx';
-import { RecipeTips } from '../containers/RecipeTips.jsx'
+import { RecipeInfo } from '../containers/RecipeInfo';
+import { RecipeIngredients } from '../containers/RecipeIngredients';
+import { RecipeInstructions } from '../containers/RecipeInstructions';
+import { RecipeNutrition } from '../containers/RecipeNutrition';
+import { RecipeTips } from '../containers/RecipeTips'
 import axios from 'axios';
 
 const sampleRecipe = {
@@ -25,10 +25,10 @@ const sampleRecipe = {
         { id: "5", name: "Black pepper" }
     ],
     ingredientAmounts: ["200g", "2", "50g", "100g", "1 tsp"],
-    isVegetarian: false,
-    isVegan: false,
-    isDairyFree: false,
-    isGlutenFree: false,
+    isVegetarian: true,
+    isVegan: true,
+    isDairyFree: true,
+    isGlutenFree: true,
     totalCookingTime: 30,
     prepTime: 15,
     cookingTime: 15,
@@ -68,9 +68,10 @@ export function RecipeInfoPage (){
         <div className='recipe-information-page'>
             <Navbar />
             <RecipeInfo recipe={recipe} />
+            <RecipeTips tips={recipe} />
             <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} />
             <RecipeInstructions instructions={recipe.instructions} />
-            <RecipeTips tips={recipe} />
+            
         </div>) : (
         <div className='recipe-information-page d-flex justify-content-center align-items-center' style={{ height: '100vh' }}>
           <i className="fa fa-spinner fa-spin fa-3x fa-fw" aria-hidden="true"></i>
