@@ -1,20 +1,32 @@
+/* General styles */
 
-main {
-    padding: 20px;
+body {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 .recipe-information-page {
     background-color: #f1f1f1;
-    padding-bottom: 100px;
+    padding-bottom: 50px;
 }
 
-.recipe-info-container {
-    padding: 40px;
+.recipe-detail-container {
+    padding-top: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 15px;
     margin: 20px auto;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 8px; 
     max-width: 800px;
+}
+
+/* Recipe Info */
+
+.recipe-info-container {
+    padding-bottom: 10px;
 }
 
 .recipe-image-container {
@@ -23,57 +35,20 @@ main {
 }
 
 .recipe-image {
-    width: 700px;   /* or a percentage like 50% */
-    height: auto;   /* maintain aspect ratio */
-}
-
-li {
-    font-size: 14px;
-    padding: 2px;
-}
-
-.input-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin-bottom: 10px;
-}
-
-input[type="text"], input[type="number"], select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    width: 700px; 
+    height: auto;
 }
 
 .tag-group {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-top: 12px;
 }
 
-.tag {
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-}
+/* Recipe Ingredients */
 
-.primary-btn {
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.instructions ol {
-    padding-left: 20px;
+.recipe-ingredients-container {
+    padding-bottom: 8px;
 }
 
 .custom-checkbox .form-check {
@@ -86,17 +61,77 @@ input[type="text"], input[type="number"], select {
     margin-top: 0;
 }
 
-.button-container {
+.ingredient-container-buttons {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-top: 10px; 
+    padding-top: 8px;
 }
 
-.add-to-list-button {
+.ingredient-select-all {
+    border-color: #9d5ff3; 
+    color: #9d5ff3;
+}
+
+.ingredient-select-all:hover {
+    background-color: #9d5ff3; 
+}
+
+.ingredient-deselect-all {
+    margin-left: 14px;
+}
+
+.ingredient-add-to-list {
+    background-color: #9d5ff3; 
+    border-color: #9d5ff3;
     margin-left: auto;
 }
 
-.ml-2 {
-    margin-left: 14px;
+.ingredient-add-to-list:hover {
+    background-color: #9244ff; 
 }
+
+/* Recipe Instructions */
+
+.recipe-instructions {
+    padding-top: 3px;
+    padding-left: 17px;
+}
+
+li {
+    font-size: 15px;
+    padding: 2px;
+}
+
+/* Recipe Tips */
+
+.tips-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 0px;
+}
+
+.btn-link {
+    text-decoration: none; 
+    color: #9d5ff3;
+}
+
+.btn-link:hover {
+color: #9244ff; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+.fade-in {
+    animation: fadeIn 1s ease-in-out;
+}
+
+ul {
+    font-size: 15px;
+    padding-left: 0px;
+}
+

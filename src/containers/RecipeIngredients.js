@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../styles/recipeInfo.css';
+import '../styles/RecipeInfo.css';
 
 export function RecipeIngredients(props) {
   const { ingredients, ingredientAmounts } = props;
@@ -38,11 +38,11 @@ export function RecipeIngredients(props) {
 
   return (
     <Form onSubmit={handleSubmit} className="ingredient-form">
-      <div className="recipe-info-container">
-        <div className="ingredients-container">
-          <h4>Ingredients</h4><br />
+      <div className="recipe-detail-container">
+        <div className="recipe-ingredients-container">
+          <p><h4>Ingredients</h4></p>
           {ingredients.map((ingredient, index) => (
-            <Form.Check
+            <p><Form.Check
               type="checkbox"
               id={`custom-checkbox-${index}`}
               label={`${ingredientAmounts[index]} ${ingredient.name}`}
@@ -50,17 +50,17 @@ export function RecipeIngredients(props) {
               checked={checkedState[index]}
               onChange={() => handleOnChange(index)}
               className="custom-checkbox"
-            />
+            /></p>
           ))}
-          <div className="button-container">
-            <Button variant="outline-primary" onClick={handleSelectAll}>
+          <div className="ingredient-container-buttons">
+            <Button variant="outline-primary" onClick={handleSelectAll} className='ingredient-select-all'>
               Select all
             </Button>
-            <Button variant="outline-secondary" onClick={handleDeselectAll} className="ml-2">
+            <Button variant="outline-secondary" onClick={handleDeselectAll} className="ingredient-deselect-all">
               Deselect all
             </Button>
             <div className="spacer"></div>
-            <Button type="submit" variant="primary" className="add-to-list-button">
+            <Button type="submit" variant="primary" className="ingredient-add-to-list">
               Add to Shopping List
             </Button>
           </div>
