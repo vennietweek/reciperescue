@@ -9,11 +9,7 @@ const axios = require('axios');
 const { OpenAI } = require('openai');
 const puppeteer = require('puppeteer');
 
-const spoonacularKey = "&apiKey=22c4658fa9554f018d280795e9459795";
-
-const openai = new OpenAI({
-  apiKey: "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",
-});
+const spoonacularKey = "apiKey=22c4658fa9554f018d280795e9459795";
 
 const app = express();
 
@@ -81,7 +77,7 @@ const RecipeSchema = new mongoose.Schema({
 
 app.get('/api/randomRecipes', async (req, res) => {
     try {
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?number=8' + spoonacularKey);
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?number=8' + '&' + spoonacularKey);
 
       results = apiResponse.data.recipes.map((recipe) => {
         return {
@@ -102,7 +98,7 @@ app.get('/api/randomRecipes', async (req, res) => {
 app.get('/api/recipeSearch', async (req, res) => {
     try {
       const ingredients = req.query.ingredients;
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?limitLicense=true&ingredients='.concat(ingredients) + spoonacularKey);
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?limitLicense=true&ingredients='.concat(ingredients) + '&' + spoonacularKey);
 
       results = apiResponse.data.map((recipe) => {
         return {
@@ -123,8 +119,8 @@ app.get('/api/recipeSearch', async (req, res) => {
 app.get('/api/recipeGet', async (req, res) => {
     try {
       const id = req.query.id;
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information' + spoonacularKey);
-      const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json' + spoonacularKey);
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information' + '?' + spoonacularKey);
+      const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json' + '?' + spoonacularKey);
 
       const data = apiResponse.data;
       const nutrition = apiResponse2.data;
@@ -162,15 +158,25 @@ app.get('/api/recipeGet', async (req, res) => {
     }
 });
 
-app.post('/api/get-chat-completion', async (req, res) => {
-  console.log(req.body);
+const openai = new OpenAI({
+  apiKey: "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",
+});
+
+app.get('/api/getTips', async (req, res) => {
+  const prompt = `Generate 10 cooking tips for the recipe: ${req.query.name}. Deliver your response as an array of Strings without numbering or open and close brackets. Do not provide any other response before or after the code. The tips should be short and sweet, at most two lines, and should be slightly more interesting, lesser-known, or expert tips. The ingredients are ${req.query.ingredients}. The instructions are ${req.query.instructions}`;
+  console.log(prompt);
   try {
-    const completion = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: req.body.message }]
-    });
-    
-    res.json(completion.data);
+    async function main() {
+      const chatCompletion = await openai.chat.completions.create({
+        messages: [{ role: 'user', content: prompt }],
+        model: 'gpt-3.5-turbo',
+      });
+
+      console.log(chatCompletion.choices[0].message.content)
+
+      res.json(chatCompletion.choices[0].message.content.split('\n').map((tip) => tip.replace(/"/g, '')));
+    }
+    main();
   } catch (error) {
     res.status(500).send(error.message);
   }
