@@ -111,6 +111,10 @@ li {
 
 /* Recipe Tips */
 
+.loading-container{
+    text-align: center;
+}
+
 .tips-navigation {
     display: flex;
     justify-content: space-between;
@@ -138,6 +142,13 @@ color: #9244ff;
 ul {
     font-size: 15px;
     padding-left: 0px;
+}
+
+.chatgpt-credit {
+    font-size: 12px;
+    padding-bottom: 10px;
+    text-align: center;
+    color: grey;
 }
 
 /* Recipe Nutrition */
