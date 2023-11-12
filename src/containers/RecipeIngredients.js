@@ -48,6 +48,7 @@ export function RecipeIngredients(props) {
               label={`${ingredientAmounts[index]} ${ingredient.name}`}
               key={ingredient.id}
               checked={checkedState[index]}
+              custom
               onChange={() => handleOnChange(index)}
               className="custom-checkbox"
             /></p>
