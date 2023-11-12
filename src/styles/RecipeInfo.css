@@ -1,0 +1,161 @@
+/* General styles */
+
+body {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.recipe-information-page {
+    background-color: #f1f1f1;
+    padding-bottom: 50px;
+}
+
+.recipe-detail-container {
+    padding-top: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 15px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; 
+    max-width: 800px;
+}
+
+/* Recipe Info */
+
+.recipe-info-container {
+    padding-bottom: 10px;
+}
+
+.recipe-image-container {
+    margin: 20px auto;
+    max-width: 700px;
+}
+
+.recipe-image {
+    width: 700px; 
+    height: auto;
+}
+
+.tag-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 12px;
+}
+
+/* Recipe Ingredients */
+
+.recipe-ingredients-container {
+    padding-bottom: 8px;
+}
+
+.custom-checkbox .form-check {
+    display: flex;
+    align-items: center;
+}
+
+.custom-checkbox .form-check-input {
+    margin-right: 8px; 
+    margin-top: 0;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #9d5ff3!important;
+    border-color: #9d5ff3!important;
+  }
+
+.ingredient-container-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px; 
+    padding-top: 8px;
+}
+
+.ingredient-select-all {
+    border-color: #9d5ff3; 
+    color: #9d5ff3;
+}
+
+.ingredient-select-all:hover {
+    background-color: #9d5ff3; 
+}
+
+.ingredient-deselect-all {
+    margin-left: 14px;
+}
+
+.ingredient-add-to-list {
+    background-color: #9d5ff3; 
+    border-color: #9d5ff3;
+    margin-left: auto;
+}
+
+.ingredient-add-to-list:hover {
+    background-color: #9244ff; 
+}
+
+/* Recipe Instructions */
+
+.recipe-instructions {
+    padding-top: 3px;
+    padding-left: 17px;
+}
+
+li {
+    font-size: 15px;
+    padding: 2px;
+}
+
+/* Recipe Tips */
+
+.tips-navigation {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 0px;
+}
+
+.btn-link {
+    text-decoration: none; 
+    color: #9d5ff3;
+}
+
+.btn-link:hover {
+color: #9244ff; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+.fade-in {
+    animation: fadeIn 1s ease-in-out;
+}
+
+ul {
+    font-size: 15px;
+    padding-left: 0px;
+}
+
+/* Recipe Nutrition */
+
+.recipe-nutrition-container {
+    padding-bottom: 10px;
+}
+
+.nutrition-facts {
+    padding-top: 8px;
+    padding-left: 0px;
+    display: flex;
+    align-items: left;
+}
+  
+.nutrition-item {
+    font-size: 16px;
+    margin: 0; 
+    flex: 1;
+    text-align: left; 
+}
