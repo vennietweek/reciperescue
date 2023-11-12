@@ -37,7 +37,8 @@ export function RecipeTips(props) {
         const prompt = `Generate 10 cooking tips for the recipe: ${recipe.name}. Deliver your response as an array of tips in code format. Do not provide any other response before or after the code. The tips should be short and sweet, at most two lines, and should be slightly more interesting, lesser-known, or expert tips. The ingredients are ${recipe.ingredients}. The instructions are ${recipe.instructions}`;
         const response = await axios.post('http://localhost:4000/api/get-chat-completion', { message: prompt });
         console.log('Tips response:', response);
-        const fetchedTips = response.data.choices[0].message.content.split('\n- ').slice(1);
+        const sanitizedContent = response.replace(/[\n\r]+/g, '');
+        const fetchedTips = JSON.parse(sanitizedContent);
         setTips(fetchedTips);
         setVisibleTips(fetchedTips.slice(0, 2));
       } catch (error) {

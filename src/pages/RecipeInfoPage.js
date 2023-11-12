@@ -68,10 +68,10 @@ export function RecipeInfoPage (){
         <div className='recipe-information-page'>
             <Navbar />
             <RecipeInfo recipe={recipe} />
-            <RecipeTips tips={recipe} />
+            <RecipeTips recipe={recipe} />
             <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} />
             <RecipeInstructions instructions={recipe.instructions} />
-            
+            <RecipeNutrition recipe={recipe} />
         </div>) : (
         <div className='recipe-information-page d-flex justify-content-center align-items-center' style={{ height: '100vh' }}>
           <i className="fa fa-spinner fa-spin fa-3x fa-fw" aria-hidden="true"></i>
