@@ -3,8 +3,7 @@ import '../styles/RecipeInfo.css';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-
+import { faArrowRight, faArrowLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const sampleTips = [
   "Use guanciale for authentic flavor.",
@@ -21,10 +20,11 @@ const sampleTips = [
 
 export function RecipeTips(props) {
 
-    const [recipe] = useState(props);
+    const [recipe] = useState(props.recipe);
     const [tips, setTips] = useState([]);
     const [visibleTips, setVisibleTips] = useState([]);
     const [tipIndex, setTipIndex] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
       if (recipe) {
@@ -33,22 +33,18 @@ export function RecipeTips(props) {
     }, [recipe]); 
     
     const getTips = async () => {
+      setIsLoading(true);
       try {
-
-        const recipe = props.tips;
         const response = await axios.get('http://localhost:4000/api/getTips?name=' + recipe.title + '&ingredients=' + recipe.ingredients.map((i) => i.name).toString()  + '&instructions=' + recipe.instructions.toString());
-        
-        console.log(response);
-        console.log(response.data);
-        
         const fetchedTips = response.data;
-        
         setTips(fetchedTips);
         setVisibleTips(fetchedTips.slice(0, 2));
       } catch (error) {
         console.error('Error fetching tips:', error);
-        setTips(sampleTips);
-        setVisibleTips(sampleTips.slice(0, 2));
+        setTips('There was an error fetching tips.');
+      }
+        finally {
+          setIsLoading(false); 
       }
     };
 
@@ -66,27 +62,39 @@ export function RecipeTips(props) {
 
     return (
       <div className="recipe-detail-container">
-          <p><h4>Recipe Tips</h4></p>
-          <ul>
-            {visibleTips.map((tip, index) => (
-              <li key={`${tipIndex}-${index}`} className="fade-in">
-                {tipIndex + index + 1}. {tip}
-              </li>
-            ))}
-          </ul>
-          <div className="tips-navigation">
-            {tipIndex > 0 && (
-              <Button variant="link" onClick={handlePreviousTips}>
-                <FontAwesomeIcon icon={faArrowLeft} /> &nbsp; Previous Tips
-              </Button>
-            )}
-            {!tipIndex > 0 && <div></div>}
-            {tips.length > 2 && tipIndex < tips.length - 2 && (
-              <Button variant="link" onClick={handleMoreTips}>
-                More Tips &nbsp;<FontAwesomeIcon icon={faArrowRight} />
-              </Button>
-            )}
+        <h4>Recipe Tips</h4>
+        {isLoading ? (
+          <div className="loading-container">
+            <FontAwesomeIcon icon={faSpinner} spin size="xl" style={{color: "#6f66f0",}} />
+            <br /><br />
+            <p className='chatgpt-credit'>Powered by ChatGPT</p>
           </div>
+        ) : (
+          <>
+            <div className="recipe-tips">
+              <ul>
+                {visibleTips.map((tip, index) => (
+                  <li key={`${tipIndex}-${index}`} className="fade-in">
+                    {tipIndex + index + 1}. {tip}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="tips-navigation">
+              {tipIndex > 0 && (
+                <Button variant="link" onClick={handlePreviousTips}>
+                  <FontAwesomeIcon icon={faArrowLeft} /> Previous Tips
+                </Button>
+              )}
+              <div className="spacer"></div>
+              {tips.length > 2 && tipIndex < tips.length - 2 && (
+                <Button variant="link" onClick={handleMoreTips}>
+                  More Tips <FontAwesomeIcon icon={faArrowRight} />
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </div>
     );
-}
+  }    

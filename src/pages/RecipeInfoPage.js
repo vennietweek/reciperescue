@@ -1,6 +1,8 @@
 import '../App.css';
 import Navbar from '../containers/Navbar.js';
 import 'font-awesome/css/font-awesome.min.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import React, { useState, useEffect } from 'react';
 import '../styles/RecipeInfo.css';
 import { useParams } from 'react-router-dom';
@@ -68,13 +70,13 @@ export function RecipeInfoPage (){
         <div className='recipe-information-page'>
             <Navbar />
             <RecipeInfo recipe={recipe} />
+            <RecipeNutrition recipe={recipe} />
             <RecipeTips recipe={recipe} />
             <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} />
             <RecipeInstructions instructions={recipe.instructions} />
-            <RecipeNutrition recipe={recipe} />
         </div>) : (
         <div className='recipe-information-page d-flex justify-content-center align-items-center' style={{ height: '100vh' }}>
-          <i className="fa fa-spinner fa-spin fa-3x fa-fw" aria-hidden="true"></i>
+          <FontAwesomeIcon icon={faSpinner} spin size="2xl" style={{color: "#6f66f0",}} />
         </div>
       )}
         </>
