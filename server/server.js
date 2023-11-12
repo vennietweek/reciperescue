@@ -165,18 +165,15 @@ const openai = new OpenAI({
 });
 
 app.get('/api/getTips', async (req, res) => {
-  const prompt = `Generate 10 cooking tips for the recipe: ${req.query.name}. Deliver your response as an array of Strings without numbering or open and close brackets. Do not provide any other response before or after the code. The tips should be short and sweet, at most two lines, and should be slightly more interesting, lesser-known, or expert tips. The ingredients are ${req.query.ingredients}. The instructions are ${req.query.instructions}`;
-  console.log(prompt);
+  const prompt = `Generate 10 cooking tips for the recipe: ${req.query.name}. Deliver your response as an array of unordered strings that allows direct parsing into JSON code. Do not provide any other response before or after the code. The tips should be short and sweet, at most two lines, and should be slightly more interesting, lesser-known, or expert tips. The ingredients are ${req.query.ingredients}. The instructions are ${req.query.instructions}. Remember, do not use any form of numbered bullet points.`;
   try {
     async function main() {
       const chatCompletion = await openai.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model: 'gpt-3.5-turbo',
       });
-
-      console.log(chatCompletion.choices[0].message.content)
-
-      res.json(chatCompletion.choices[0].message.content.split('\n').map((tip) => tip.replace(/"/g, '')));
+      data = JSON.parse(chatCompletion.choices[0].message.content)
+      res.send(data);
     }
     main();
   } catch (error) {

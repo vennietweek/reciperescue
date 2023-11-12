@@ -111,10 +111,22 @@ li {
 
 /* Recipe Tips */
 
+.recipe-tips {
+    padding-top: 5px;
+}
+
 .tips-navigation {
     display: flex;
     justify-content: space-between;
     padding-left: 0px;
+}
+
+.loading-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+
 }
 
 .btn-link {
@@ -138,6 +150,14 @@ color: #9244ff;
 ul {
     font-size: 15px;
     padding-left: 0px;
+}
+
+.chatgpt-credit {
+    display: block;
+    margin-top: 10px;
+    font-size: 7px;
+    color: grey;
+    text-align: center;
 }
 
 /* Recipe Nutrition */
