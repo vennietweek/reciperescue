@@ -205,9 +205,6 @@ const scrape = async (searchTerm) => {
     const productImg = Array.from(productImgList).map((elem) => { return elem.src; });
     const linkElements = productSection.querySelectorAll("a")
     const link = Array.from(linkElements).map((elem) => {return elem.href})
-    console.log(productName);
-    console.log(productPrice);
-    console.log(productAmt);
     let results = [];
     for(i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) { //adjust the max i value to limit the number of results returned
       results.push({
