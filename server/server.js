@@ -195,20 +195,26 @@ const scrape = async (searchTerm) => {
   // Get page data
   const products = await page.evaluate(() => {
     const productSection = document.querySelector(".productCollection");
-    const productNameList = productSection.querySelectorAll('[data-testid="product-name-and-metadata"]');
+    const productNameList = productSection.querySelectorAll('.ctPXx');
     const productName = Array.from(productNameList).map((elem) => { return elem.innerText; });
     const productPriceList = productSection.querySelectorAll('.cXCGWM');
     const productPrice = Array.from(productPriceList).map((elem) => { return elem.innerText; });
+    const productAmtList = productSection.querySelectorAll('.cURkuH');
+    const productAmt = Array.from(productAmtList).map((elem) => { return elem.innerText; });
     const productImgList = productSection.querySelectorAll('img');
     const productImg = Array.from(productImgList).map((elem) => { return elem.src; });
     const linkElements = productSection.querySelectorAll("a")
     const link = Array.from(linkElements).map((elem) => {return elem.href})
+    console.log(productName);
+    console.log(productPrice);
+    console.log(productAmt);
     let results = [];
     for(i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) { //adjust the max i value to limit the number of results returned
       results.push({
         name: productName[i],
         price: productPrice[i],
         image: productImg[i],
+        quantity: productAmt[i],
         link: link[i],
       });
     }
