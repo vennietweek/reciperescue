@@ -33,47 +33,19 @@ app.use(express.json());
 
 app.post('/api/ingredients', async (req, res) => {
   const { dbingredient, price, quantity, image } = req.body;
-  const newItem = new Item({ dbingredient, price, quantity, image });
-  await newItem.save();
-  res.json(newItem);
+  for (let i = 0; i < dbingredient.length; i++) {
+    const newItem = new Item({ dbingredient: dbingredient[i], price: price ? price[i] : '', quantity: quantity[i], image: image ? image[i] : ''});
+    await newItem.save();
+  }
+  const items = await Item.find();
+
+  res.json(items);
 });
 
 app.get('/api/ingredients', async (req, res) => {
   const items = await Item.find();
   res.json(items);
 });
-
-const RecipeSchema = new mongoose.Schema({
-    id: String,
-    title: String,
-    image: String,
-    ingredients: [IngredientSchema],
-    ingredientAmounts: [String],
-    isVegetarian: Boolean,
-    isVegan: Boolean,
-    isDairyFree: Boolean,
-    totalCookingTime: Number,
-    prepTime: Number,
-    cookingTime: Number,
-    calories: Number,
-    instructions: [String],
-    tips: [String],
-    });
-  
-  const Recipe = mongoose.model('recipe', RecipeSchema);
-  
-  app.post('/api/recipes', async (req, res) => {
-    const { dbingredient, price, quantity, image } = req.body;
-    const newItem = new Recipe({ dbingredient, price, quantity, image });
-    await newItem.save();
-    res.json(newItem);
-  });
-  
-  app.get('/api/recipes', async (req, res) => {
-    const items = await Recipe.find();
-    console.log('Retrieved items:', items); // Add this line for debugging
-    res.json(items);
-  });
 
 app.get('/api/randomRecipes', async (req, res) => {
     try {
@@ -88,7 +60,6 @@ app.get('/api/randomRecipes', async (req, res) => {
           link: "/recipe/".concat(recipe.id),
         };
       });
-      console.log(results);
 
       res.json({ results });
     } catch (error) {
@@ -150,7 +121,6 @@ app.get('/api/recipeGet', async (req, res) => {
             return {id: counter, name: ingredient.originalName};            
         }),
         ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
-        tips: "",
       };
 
       res.json({ recipe });
@@ -204,7 +174,7 @@ const scrape = async (searchTerm) => {
     const linkElements = productSection.querySelectorAll("a")
     const link = Array.from(linkElements).map((elem) => {return elem.href})
     let results = [];
-    for(i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) {
+    for(i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) { //adjust the max i value to limit the number of results returned
       results.push({
         name: productName[i],
         price: productPrice[i],

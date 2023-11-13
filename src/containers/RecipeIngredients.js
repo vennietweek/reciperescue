@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/RecipeInfo.css';
 
 export function RecipeIngredients(props) {
   const { ingredients, ingredientAmounts } = props;
-  const navigate = useNavigate();
 
   // State to track checked ingredients
   const [checkedState, setCheckedState] = useState(
@@ -30,10 +30,22 @@ export function RecipeIngredients(props) {
     setCheckedState(new Array(ingredients.length).fill(false));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const selectedIngredients = ingredients.filter((_, index) => checkedState[index]);
-    navigate('/shopping_list', { state: { selectedIngredients } });
+    const dbingredient = ingredients.filter((_, index) => checkedState[index]).map((ingredient) => ingredient.name);
+    const quantity = ingredientAmounts.filter((_, index) => checkedState[index]);
+    const input = { dbingredient, quantity };
+    try {
+      const response = await axios.post('http://localhost:4000/api/ingredients', input);
+
+      // reset the the checks
+      setCheckedState(new Array(ingredients.length).fill(false));
+
+      console.log('Ingredients added successfully!');
+      console.log('Ingredients in shopping list:', response.data);
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
   return (
