@@ -11,6 +11,7 @@ const { OpenAI } = require('openai');
 const puppeteer = require('puppeteer');
 
 const spoonacularKey = "apiKey=22c4658fa9554f018d280795e9459795";
+const spoonacularKey2 = "apiKey=1580ffd925e2485e9a7238eadd6a16c9";
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mydatabase', {
@@ -18,10 +19,18 @@ mongoose.connect('mongodb://localhost:27017/mydatabase', {
   useUnifiedTopology: true,
 });
 
+const ingredientImg = new mongoose.Schema({
+  dbingredient: String,
+  image: String,
+});
+
+const ingredImg = mongoose.model('ingredientlist', ingredientImg);
+
 const IngredientSchema = new mongoose.Schema({
   dbingredient: String,
   price: String,
   quantity: String,
+  measurement: String,
   image: String,
 });
 
@@ -32,10 +41,21 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/api/ingredients', async (req, res) => {
-  const { dbingredient, price, quantity, image } = req.body;
+  const { dbingredient, quantity } = req.body;
   for (let i = 0; i < dbingredient.length; i++) {
-    const newItem = new Item({ dbingredient: dbingredient[i], price: price ? price[i] : '', quantity: quantity[i], image: image ? image[i] : ''});
-    await newItem.save();
+    const amount = quantity[i].split(' ')[0];
+    const measurement = quantity[i].split(' ')[1] ? quantity[i].split(' ')[1] : '';
+    const existing = await Item.findOne({ dbingredient: dbingredient[i], measurement: measurement });
+    if (existing) {
+      const newQuantity = parseInt(existing.quantity) + parseInt(amount);
+      const newPrice = existing.price != '' ? (parseFloat(existing.price) / parseInt(existing.quantity) * newQuantity).toFixed(2) : '';
+      await Item.updateOne({ dbingredient: dbingredient[i] }, { quantity: newQuantity.toString(), price: newPrice });
+    } else {
+      const ingredient = await ingredImg.findOne({ dbingredient: dbingredient[i] });
+      console.log(ingredient);
+      const newItem = new Item({ dbingredient: dbingredient[i], price: '', quantity: amount, image: ingredient.image ? ingredient.image : '', measurement: measurement });
+      await newItem.save();
+    }
   }
   const items = await Item.find();
 
@@ -100,7 +120,17 @@ app.get('/api/recipeGet', async (req, res) => {
 
       let counter = 0;
 
-      recipe = {
+      const imageURL = "https://spoonacular.com/cdn/ingredients_250x250/";
+
+      data.extendedIngredients.forEach(async (ingredient) => {
+        const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
+        if (!existing) {
+          const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
+          await newIngred.save();
+        }
+      });
+
+      let recipe = {
         id: data.id,
         title: data.title,
         image: data.image,

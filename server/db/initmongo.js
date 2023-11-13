@@ -96,6 +96,21 @@ db.recipes.insertMany([
     }
 ])
 
+db.createCollection("ingredientlists");
+db.ingredientlists.insertMany([
+    {
+        dbingredient: 'cauliflower florets',
+        image: 'https://spoonacular.com/cdn/ingredients_250x250/cauliflower.jpg', 
+      },
+      {
+        dbingredient: 'grated cheese',
+        image: 'https://spoonacular.com/cdn/ingredients_250x250/parmesan.jpg', 
+      },
+      {
+        dbingredient: 'extra virgin olive oil',
+        image: 'https://spoonacular.com/cdn/ingredients_250x250/olive-oil.jpg', 
+      }
+    ]);
 
 db.createCollection("shoppinglists");
 db.shoppinglists.insertMany([
@@ -103,18 +118,21 @@ db.shoppinglists.insertMany([
         dbingredient: 'Apple',
         price: '1.99',
         quantity: '10',
+        measurement: "",
         image: 'https://images.all-free-download.com/images/graphiclarge/camera_test_apple_560282.jpg', 
       },
       {
         dbingredient: 'Orange',
         price: '0.99',
         quantity: '15',
+        measurement: "",
         image: 'https://images.all-free-download.com/images/graphiclarge/orange_backdrop_fruit_juice_petal_decor_6931338.jpg', 
       },
       {
         dbingredient: 'Banana',
         price: '0.49',
         quantity: '20',
+        measurement: "",
         image: 'https://image.shutterstock.com/image-photo/stock-vector-whole-banana-with-half-slices-and-leaves-isolated-on-white-background-vector-illustration-450w-286161728.jpg', 
       }
     ]);
