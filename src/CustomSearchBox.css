@@ -167,8 +167,21 @@
   border-radius: 20px
 }
 
+.check-price-button { 
+  align-self: flex-end; 
+  margin: 0px; 
+  font-size: 14px; 
+  background: white; 
+  color: #000; 
+  border: 1px solid #324AB2; 
+  padding: 2px 4px; 
+  cursor: pointer; 
+  border-radius: 20px 
+} 
 
-
-
+.check-price-button:hover { 
+  background-color: #324AB2; 
+  color: white; 
+} 
   
   
