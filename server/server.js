@@ -43,7 +43,7 @@ app.use(express.json());
 app.post('/api/ingredients', async (req, res) => {
   const { dbingredient, quantity } = req.body;
   for (let i = 0; i < dbingredient.length; i++) {
-    const amount = quantity[i].split(' ')[0];
+    const amount = Math.ceil(quantity[i].split(' ')[0]);
     const measurement = quantity[i].split(' ')[1] ? quantity[i].split(' ')[1] : '';
     const existing = await Item.findOne({ dbingredient: dbingredient[i], measurement: measurement });
     if (existing) {
@@ -67,97 +67,166 @@ app.get('/api/ingredients', async (req, res) => {
   res.json(items);
 });
 
-app.get('/api/randomRecipes', async (req, res) => {
-    try {
-
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?number=8' + '&' + spoonacularKey);
-
-      results = apiResponse.data.recipes.map((recipe) => {
-        return {
-          id: recipe.id,
-          name: recipe.title,
-          image: recipe.image,
-          link: "/recipe/".concat(recipe.id),
-        };
-      });
-
-      res.json({ results });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Error retrieving data' });
+app.put('/api/increase-quantity/:id', async (req, res) => {
+  const itemId = req.params.id;
+  try {
+    // Find the item by ID 
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
     }
+    // Increase the quantity (Math.min is used to ensure it doesn't go above 999) 
+    const newQuantity = Math.min(999, parseInt(item.quantity, 10) + 1);
+    // Update the item with the new quantity 
+    await Item.updateOne({ _id: itemId }, { quantity: newQuantity.toString() });
+    // Respond with the updated item or a success message 
+    res.json({ message: 'Quantity increased successfully', updatedItem: { ...item.toObject(), quantity: newQuantity } });
+  } catch (error) {
+    console.error('Error increasing quantity:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+app.put('/api/decrease-quantity/:id', async (req, res) => { 
+  const itemId = req.params.id; 
+  try { 
+    // Find the item by ID 
+    const item = await Item.findById(itemId); 
+    if (!item) { 
+      return res.status(404).json({ message: 'Item not found' }); 
+    } 
+    // Decrease the quantity (Math.max is used to ensure it doesn't go below 1) 
+    const newQuantity = Math.max(1, parseInt(item.quantity, 10) - 1); 
+    // Update the item with the new quantity 
+    await Item.updateOne({ _id: itemId }, { quantity: newQuantity.toString() }); 
+    // Respond with the updated item or a success message 
+    res.json({ message: 'Quantity decreased successfully', updatedItem: { ...item.toObject(), quantity: newQuantity } }); 
+  } catch (error) { 
+    console.error('Error decreasing quantity:', error); 
+    res.status(500).json({ message: 'Internal Server Error' }); 
+  } 
+}); 
+
+app.delete('/api/del-ingredients/:id', async (req, res) => { 
+  const itemId = req.params.id; 
+  try { 
+    // Find the item by ID and delete it 
+    const result = await Item.deleteOne({ _id: itemId }); 
+    if (result.deletedCount === 0) { 
+      return res.status(404).json({ message: 'Item not found' }); 
+    } 
+    // Respond with a success message or any other relevant data 
+    res.json({ message: 'Item deleted successfully' }); 
+  } catch (error) { 
+    console.error('Error deleting ingredient:', error); 
+    res.status(500).json({ message: 'Internal Server Error' }); 
+  } 
+}); 
+
+app.delete('/api/clear-ingredients', async (req, res) => { 
+  try { 
+    // Remove all items from the database 
+    await Item.deleteMany({}); 
+    // Respond with a success message or any other relevant data 
+    res.json({ message: 'All items deleted successfully' }); 
+  } catch (error) { 
+    console.error('Error clearing ingredients:', error); 
+    res.status(500).json({ message: 'Internal Server Error' }); 
+  } 
+}); 
+
+
+app.get('/api/randomRecipes', async (req, res) => {
+  try {
+
+    const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?number=8' + '&' + spoonacularKey);
+
+    results = apiResponse.data.recipes.map((recipe) => {
+      return {
+        id: recipe.id,
+        name: recipe.title,
+        image: recipe.image,
+        link: "/recipe/".concat(recipe.id),
+      };
+    });
+
+    res.json({ results });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error retrieving data' });
+  }
 });
 
 app.get('/api/recipeSearch', async (req, res) => {
-    try {
-      const ingredients = req.query.ingredients;
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?limitLicense=true&ingredients='.concat(ingredients) + '&' + spoonacularKey);
+  try {
+    const ingredients = req.query.ingredients;
+    const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?limitLicense=true&ingredients='.concat(ingredients) + '&' + spoonacularKey);
 
-      results = apiResponse.data.map((recipe) => {
-        return {
-          id: recipe.id,
-          name: recipe.title,
-          image: recipe.image,
-          link: "/recipe/".concat(recipe.id),
-        };
-      });
+    results = apiResponse.data.map((recipe) => {
+      return {
+        id: recipe.id,
+        name: recipe.title,
+        image: recipe.image,
+        link: "/recipe/".concat(recipe.id),
+      };
+    });
 
-      res.json({ results });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Error retrieving data' });
-    }
+    res.json({ results });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error retrieving data' });
+  }
 });
 
 app.get('/api/recipeGet', async (req, res) => {
-    try {
-      const id = req.query.id;
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information' + '?' + spoonacularKey);
-      const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json' + '?' + spoonacularKey);
+  try {
+    const id = req.query.id;
+    const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information' + '?' + spoonacularKey);
+    const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json' + '?' + spoonacularKey);
 
-      const data = apiResponse.data;
-      const nutrition = apiResponse2.data;
+    const data = apiResponse.data;
+    const nutrition = apiResponse2.data;
 
-      let counter = 0;
+    let counter = 0;
 
-      const imageURL = "https://spoonacular.com/cdn/ingredients_250x250/";
+    const imageURL = "https://spoonacular.com/cdn/ingredients_250x250/";
 
-      data.extendedIngredients.forEach(async (ingredient) => {
-        const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
-        if (!existing) {
-          const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
-          await newIngred.save();
-        }
-      });
+    data.extendedIngredients.forEach(async (ingredient) => {
+      const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
+      if (!existing) {
+        const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
+        await newIngred.save();
+      }
+    });
 
-      let recipe = {
-        id: data.id,
-        title: data.title,
-        image: data.image,
-        servingSize: data.servings,
-        description: data.summary.split('.')[0].replace(/<[^>]*>/g, '') + '.',
-        isVegetarian: data.vegetarian,
-        isVegan: data.vegan,
-        isDairyFree: data.dairyFree,
-        isGlutenFree: data.glutenFree,
-        totalCookingTime: data.readyInMinutes,
-        calories: nutrition.calories,
-        carbs: nutrition.carbs,
-        fat: nutrition.fat,
-        protein: nutrition.protein,
-        instructions: data.instructions.replace(/<[^>]*>/g, '').split(/[.\n]/).filter((instruction) => {return instruction !== ''}),
-        ingredients: data.extendedIngredients.map((ingredient) => {
-            counter++;
-            return {id: counter, name: ingredient.originalName};            
-        }),
-        ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
-      };
+    let recipe = {
+      id: data.id,
+      title: data.title,
+      image: data.image,
+      servingSize: data.servings,
+      description: data.summary.split('.')[0].replace(/<[^>]*>/g, '') + '.',
+      isVegetarian: data.vegetarian,
+      isVegan: data.vegan,
+      isDairyFree: data.dairyFree,
+      isGlutenFree: data.glutenFree,
+      totalCookingTime: data.readyInMinutes,
+      calories: nutrition.calories,
+      carbs: nutrition.carbs,
+      fat: nutrition.fat,
+      protein: nutrition.protein,
+      instructions: data.instructions.replace(/<[^>]*>/g, '').split(/[.\n]/).filter((instruction) => { return instruction !== '' }),
+      ingredients: data.extendedIngredients.map((ingredient) => {
+        counter++;
+        return { id: counter, name: ingredient.originalName };
+      }),
+      ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
+    };
 
-      res.json({ recipe });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Error retrieving data' });
-    }
+    res.json({ recipe });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error retrieving data' });
+  }
 });
 
 const openai = new OpenAI({
@@ -204,9 +273,9 @@ const scrape = async (searchTerm) => {
     const productImgList = productSection.querySelectorAll('img');
     const productImg = Array.from(productImgList).map((elem) => { return elem.src; });
     const linkElements = productSection.querySelectorAll("a")
-    const link = Array.from(linkElements).map((elem) => {return elem.href})
+    const link = Array.from(linkElements).map((elem) => { return elem.href })
     let results = [];
-    for(i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) { //adjust the max i value to limit the number of results returned
+    for (i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) { //adjust the max i value to limit the number of results returned
       results.push({
         name: productName[i],
         price: productPrice[i],
@@ -233,5 +302,5 @@ app.get('/api/getFairpriceItems', async (req, res) => {
 });
 
 app.listen(4000, function () {
-    console.log('Server started on port 4000');
+  console.log('Server started on port 4000');
 });

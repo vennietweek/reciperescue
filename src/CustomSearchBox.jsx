@@ -3,7 +3,7 @@ import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
 import './CustomSearchBox.css'
 
-function CustomSearchBox() { 
+function CustomSearchBox() {
   const [dbingredients, setDBIngredients] = useState([]);
   useEffect(() => { //setting up a "database" of ingredients
     setDBIngredients([
@@ -11,50 +11,52 @@ function CustomSearchBox() {
         dbingredient: 'Apple',
         price: '1.99',
         quantity: '10',
-        image: 'https://images.all-free-download.com/images/graphiclarge/camera_test_apple_560282.jpg', 
+        image: 'https://images.all-free-download.com/images/graphiclarge/camera_test_apple_560282.jpg',
       },
       {
         dbingredient: 'Orange',
         price: '0.99',
         quantity: '15',
-        image: 'https://images.all-free-download.com/images/graphiclarge/orange_backdrop_fruit_juice_petal_decor_6931338.jpg', 
+        image: 'https://images.all-free-download.com/images/graphiclarge/orange_backdrop_fruit_juice_petal_decor_6931338.jpg',
       },
       {
         dbingredient: 'Banana',
         price: '0.49',
         quantity: '20',
-        image: 'https://image.shutterstock.com/image-photo/stock-vector-whole-banana-with-half-slices-and-leaves-isolated-on-white-background-vector-illustration-450w-286161728.jpg', 
+        image: 'https://image.shutterstock.com/image-photo/stock-vector-whole-banana-with-half-slices-and-leaves-isolated-on-white-background-vector-illustration-450w-286161728.jpg',
       },
     ]);
   }, []);
-  useEffect(() => { //setting up "database" of ingredients added from recipe page
-    setListings([
-      {
-        ingredient: 'Apple',
-        price: '1.99',
-        quantity: 10,
-        imageLink: 'https://images.all-free-download.com/images/graphiclarge/camera_test_apple_560282.jpg',
-        imageUploaded: null,
-        id: 'test123',
-      },
-      {
-        ingredient: 'Orange',
-        price: '0.99',
-        quantity: 15,
-        imageLink: 'https://images.all-free-download.com/images/graphiclarge/orange_backdrop_fruit_juice_petal_decor_6931338.jpg',
-        imageUploaded: null,
-        id: 'test234',
-      },
-      {
-        ingredient: 'Banana',
-        price: '0.49',
-        quantity: 20,
-        imageLink: 'https://image.shutterstock.com/image-photo/stock-vector-whole-banana-with-half-slices-and-leaves-isolated-on-white-background-vector-illustration-450w-286161728.jpg',
-        imageUploaded: null,
-        id: 'test345',
-      },
-    ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/ingredients');
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+
+        // Map the API response to the format used in your setListings state
+        const mappedData = data.map((item) => ({
+          ingredient: item.dbingredient,
+          price: item.price === "" ? null : item.price,
+          quantity: parseInt(item.quantity, 10) || 0, // Assuming quantity is a number
+          imageLink: item.image,
+          measurement: item.measurement ? "(" + item.measurement + ")" : "",
+          imageUploaded: null, // Assuming you want to initialize this to null
+          id: item._id,
+        }));
+
+        setListings(mappedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
+
   const [userInput, setUserInput] = useState('');
   const [filteredIngredients, setFilteredIngredients] = useState([]);
   const [selectedIngredient, setSelectedIngredient] = useState(null);
@@ -64,7 +66,7 @@ function CustomSearchBox() {
   const dropDownRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => { 
+  useEffect(() => {
     const handleClickOutside = (event) => { //handling clicks outside of add ingredients search bar
       if (
         inputRef.current &&
@@ -102,12 +104,12 @@ function CustomSearchBox() {
     const price = e.target.price.value; //user input of ingredient price
     const quantity = Number(e.target.quantity.value); //user input of ingredient quantity
     const imageUploaded = e.target.image.files[0]; //user input of ingredient image
-    const imageLink = null; 
+    const imageLink = null;
     const id = uuidv4(); //generated id for user input of ingredient
     if (!imageUploaded) { //handling error for no image uploaded
       alert('Please select an image.');
       return;
-    } 
+    }
     if (!price) { //handling error for no price uploaded
       alert('Please enter price.');
       return;
@@ -134,35 +136,80 @@ function CustomSearchBox() {
     setShowSuggestions(true);
   };
 
-  const deleteIngredient = (id) => { //handling delete ingredients by id
-    const newListings = listings.filter((listing) => listing.id !== id);
-    setListings(newListings);
+  const deleteIngredient = async (id) => { //handling delete ingredients by id 
+    try {
+      // Make API request to delete ingredient by id 
+      await fetch(`http://localhost:4000/api/del-ingredients/${id}`, {
+        method: 'DELETE',
+      });
+      // Update the state after successful deletion 
+      const newListings = listings.filter((listing) => listing.id !== id);
+      setListings(newListings);
+    } catch (error) {
+      console.error('Error deleting ingredient:', error);
+    }
   };
 
-  const decreaseQuantity = (id) => { //enable user to decrease quantity of added ingredient 
-    setListings((ogListings) =>
-      ogListings.map((listing) => {
-        if (listing.id === id) {
-          return { ...listing, quantity: Math.max(1, listing.quantity - 1) };
-        }
-        return listing;
-      })
-    );
+  const decreaseQuantity = async (id) => {
+    try {
+      // Make API request to decrease quantity of ingredient by id 
+      const response = await fetch(`http://localhost:4000/api/decrease-quantity/${id}`, {
+        method: 'PUT', // Use PUT for updating resources 
+      });
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to decrease quantity: ${errorMessage}`);
+      }
+      // Assuming you have a state variable named 'listings' and a setter 'setListings' 
+      // Update the state after successful decrease in quantity 
+      setListings((ogListings) =>
+        ogListings.map((listing) =>
+          listing.id === id ? { ...listing, quantity: Math.max(1, listing.quantity - 1) } : listing
+        )
+      );
+    } catch (error) {
+      console.error('Error decreasing quantity:', error);
+    }
   };
 
-  const increaseQuantity = (id) => { //enable user to increase quantity of added ingredient
-    setListings((ogListings) =>
-      ogListings.map((listing) => {
-        if (listing.id === id) {
-          return { ...listing, quantity: Math.min(999, listing.quantity + 1) };
-        }
-        return listing;
-      })
-    );
+  const increaseQuantity = async (id) => {
+    try {
+      // Make API request to increase quantity of ingredient by id 
+      const response = await fetch(`http://localhost:4000/api/increase-quantity/${id}`, {
+        method: 'PUT', // Use PUT for updating resources 
+      });
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to increase quantity: ${errorMessage}`);
+      }
+      // Assuming you have a state variable named 'listings' and a setter 'setListings' 
+      // Update the state after successful increase in quantity 
+      setListings((ogListings) =>
+        ogListings.map((listing) =>
+          listing.id === id ? { ...listing, quantity: Math.min(999, listing.quantity + 1) } : listing
+        )
+      );
+    } catch (error) {
+      console.error('Error increasing quantity:', error);
+    }
   };
 
-  const clearListings = () => { //enable user clear all ingredients in shopping list
-    setListings([]);
+
+  const clearListings = async () => {
+    try {
+      // Make API request to clear all ingredients 
+      const response = await fetch('http://localhost:4000/api/clear-ingredients', {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to clear ingredients: ${errorMessage}`);
+      }
+      // Update the state after successful clearing 
+      setListings([]);
+    } catch (error) {
+      console.error('Error clearing ingredients:', error);
+    }
   };
 
   const totalValue = listings.reduce((total, listing) => total + listing.price * listing.quantity, 0);
@@ -171,70 +218,78 @@ function CustomSearchBox() {
 
   return (
     <div>
-    <div id="shopping_list" className="custom-search-box">
-      <div id="add-ingredient-container">
-      <input //input for add ingredients search bar
-        type="text"
-        placeholder="Add ingredients..."
-        value={userInput}
-        onChange={handleSearch}
-        onClick={toggleDropdown}
-        ref={inputRef}
-      />
-      {showSuggestions && userInput && ( //show suggestions of existing ingredients in database as well as user input in the dropdown
-        <ul className="custom-dropdown" ref={dropDownRef}>
-          {filteredIngredients.map((ingredient, index) => (
-            <li key={index} onClick={() => handleItemClick(ingredient)}>
-              {ingredient}
-            </li>
-          ))}
-        </ul>
-      )}
-      </div>
-      {showForm && selectedIngredient && ( //accept user input of details of selected ingredient
-        <div className="custom-form">
-          <h3>{selectedIngredient}</h3>
-          <form onSubmit={handleFormSubmit}>
-            <input type="number" name="price" placeholder="Price" />
-            <input type="number" name="quantity" placeholder="Quantity" />
-            <input type="file" name="image" accept="image/*" />
-            <button className="submit-button" type="submit">Submit</button>
-          </form>
+      <div id="shopping_list" className="custom-search-box">
+        <div id="add-ingredient-container">
+          <input //input for add ingredients search bar 
+            type="text"
+            placeholder="Add ingredients..."
+            value={userInput}
+            onChange={handleSearch}
+            onClick={toggleDropdown}
+            ref={inputRef}
+          />
+          {showSuggestions && userInput && ( //show suggestions of existing ingredients in database as well as user input in the dropdown 
+            <ul className="custom-dropdown" ref={dropDownRef}>
+              {filteredIngredients.map((ingredient, index) => (
+                <li key={index} onClick={() => handleItemClick(ingredient)}>
+                  {ingredient}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
-    </div>
-    <div className="grocery-list">
-    <button className="clear-button" onClick={clearListings}>
-      Clear List
-    </button>
-    {listings.map((listing, index) => (
-      <div key={index} className="list-listing">
-        <div className="column image-container">
-        {listing.imageUploaded === null ? (
-            <img src={listing.imageLink} alt={listing.ingredient} />
-            ) : (
-              <img src={URL.createObjectURL(listing.imageUploaded)} alt={listing.ingredient} />
+        {showForm && selectedIngredient && ( //accept user input of details of selected ingredient 
+          <div className="custom-form">
+            <h3>{selectedIngredient}</h3>
+            <form onSubmit={handleFormSubmit}>
+              <input type="number" name="price" placeholder="Price" />
+              <input type="number" name="quantity" placeholder="Quantity" />
+              <input type="file" name="image" accept="image/*" />
+              <button className="submit-button" type="submit">Submit</button>
+            </form>
+          </div>
+        )}
+      </div>
+      <div className="grocery-list">
+        <button className="clear-button" onClick={clearListings}>
+          Clear List
+        </button>
+        {listings.map((listing, index) => (
+          <div key={index} className="list-listing">
+            <div className="column image-container">
+              {listing.imageUploaded === null ? (
+                <img src={listing.imageLink} alt={listing.ingredient} />
+              ) : (
+                <img src={URL.createObjectURL(listing.imageUploaded)} alt={listing.ingredient} />
               )}
-        </div>
-        <div className="column listing-details">
-          <div className="name" style={{ textAlign: 'left' }}>{listing.ingredient}</div>
-          <div className="price" style={{ textAlign: 'left' }}>${listing.price}</div>
-        </div>
-        <div className="column quantity-container">
-          <button className="quantity-button" onClick={() => decreaseQuantity(listing.id)}><FaMinus/></button>
-          <div className="quantity">{listing.quantity}</div>
-          <button className="quantity-button" onClick={() => increaseQuantity(listing.id)}><FaPlus/></button>
-        </div>
-        <div className="column trash-container">
-          <button className="trash-button" onClick={() => deleteIngredient(listing.id)}>
-            <FaTrash />
-          </button>
-        </div>
+            </div>
+            <div className="column listing-details">
+              <div className="name" style={{ textAlign: 'left' }}>{listing.ingredient} {listing.measurement}</div>
+              <div style={{ textAlign: 'left' }}>
+                {listing.price ? (
+                  <div className="price" style={{ textAlign: 'left' }}>
+                    ${listing.price}
+                  </div>
+                ) : (
+                  <button className="check-price-button" onClick={() => alert(listing.ingredient)}>Check Price</button>
+                )}
+              </div>
+            </div>
+            <div className="column quantity-container">
+              <button className="quantity-button" onClick={() => decreaseQuantity(listing.id)}><FaMinus /></button>
+              <div className="quantity">{listing.quantity}</div>
+              <button className="quantity-button" onClick={() => increaseQuantity(listing.id)}><FaPlus /></button>
+            </div>
+            <div className="column trash-container">
+              <button className="trash-button" onClick={() => deleteIngredient(listing.id)}>
+                <FaTrash />
+              </button>
+            </div>
+          </div>
+        ))}
+        <p>Total Price: ${roundedTotalValue}</p>
       </div>
-    ))}
-    <p>Total Price: ${roundedTotalValue}</p>
-  </div>
-</div>
+    </div>
   );
 }
 
