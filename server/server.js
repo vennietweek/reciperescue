@@ -1,10 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-// const { ApolloServer } = require('apollo-server-express');
-// const { GraphQLScalarType } = require('graphql');
-// const resolvers = require('./graphql/resolvers.js');
-// const { connectDB, db } = require('./db/connectDB.js');
-// const typeDefs = require('./graphql/schema.js');
+const nlp = require('compromise');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const { OpenAI } = require('openai');
@@ -265,6 +261,9 @@ const scrape = async (searchTerm) => {
   const products = await page.evaluate(() => {
     const productSection = document.querySelector(".productCollection");
     const productNameList = productSection.querySelectorAll('.ctPXx');
+    if (productNameList.length == 0) {
+      return [];
+    }
     const productName = Array.from(productNameList).map((elem) => { return elem.innerText; });
     const productPriceList = productSection.querySelectorAll('.cXCGWM');
     const productPrice = Array.from(productPriceList).map((elem) => { return elem.innerText; });
@@ -290,10 +289,23 @@ const scrape = async (searchTerm) => {
   await browser.close();
   return products;
 };
+
+// used to sieve out adjectives or non-ingredient words in the search term for scrapping
+function findNouns(phrase) {
+  const doc = nlp(phrase);
+  const nouns = doc.nouns().out('array').join(' ');
+  return nouns
+}
+
 app.get('/api/getFairpriceItems', async (req, res) => {
   try {
     const searchTerm = req.query.searchTerm;
-    const productList = await scrape(searchTerm);
+    const cleanSearchTerm = findNouns(searchTerm);
+    console.log(cleanSearchTerm);
+    const productList = await scrape(cleanSearchTerm);
+    if (productList.length == 0) {
+      res.status(404).json({ success: false, message: 'No products found' });
+    }
     res.json({ productList });
   } catch (error) {
     console.error(error);
