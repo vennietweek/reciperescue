@@ -55,7 +55,7 @@ export function RecipeInfoPage (){
         const fetchRecipe = async () => {
             try {
                 const response = await axios.get('http://localhost:4000/api/recipeGet?id=' + id.toString());
-                setRecipe(response.data.recipe);
+                setRecipe(response.data);
             } catch (error) {
                 console.error(error);
                 setRecipe(sampleRecipe);

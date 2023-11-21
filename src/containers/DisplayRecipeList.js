@@ -11,8 +11,8 @@ function DisplayRecipe(props) {
     const fetchRandomList = async () => {
         try {
             const response = await axios.get('http://localhost:4000/api/randomRecipes');
-            console.log(response.data.results);
-            setRecipeList(response.data.results);
+            console.log(response.data);
+            setRecipeList(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -28,7 +28,7 @@ function DisplayRecipe(props) {
         // API call here
         axios.get(`http://localhost:4000/api/recipeSearch?ingredients=$`.concat(props.searchList.toString()))
           .then(response => {
-            setRecipeList(response.data.results);
+            setRecipeList(response.data);
             setIsLoading(false);
           })
           .catch(error => {

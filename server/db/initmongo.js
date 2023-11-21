@@ -6,6 +6,10 @@
 
 db.dropDatabase()
 
+db.createCollection("recipelists")
+
+db.createCollection("fairpriceitems")
+
 db.createCollection("recipes")
 
 db.recipes.insertMany([

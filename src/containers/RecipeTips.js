@@ -35,7 +35,7 @@ export function RecipeTips(props) {
     const getTips = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get('http://localhost:4000/api/getTips?name=' + recipe.title + '&ingredients=' + recipe.ingredients.map((i) => i.name).toString()  + '&instructions=' + recipe.instructions.toString());
+        const response = await axios.get('http://localhost:4000/api/getTips?id=' + recipe.id);
         const fetchedTips = response.data;
         setTips(fetchedTips);
         setVisibleTips(fetchedTips.slice(0, 2));

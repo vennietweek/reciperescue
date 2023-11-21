@@ -5,9 +5,10 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const { OpenAI } = require('openai');
 const puppeteer = require('puppeteer');
+require('dotenv').config();
 
-const spoonacularKey = "apiKey=22c4658fa9554f018d280795e9459795";
-const spoonacularKey2 = "apiKey=1580ffd925e2485e9a7238eadd6a16c9";
+const spoonacularKey = "apiKey=" + process.env.spoonacularKey;
+const spoonacularKey2 = "apiKey=" + process.env.spoonacularKey2;
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/mydatabase', {
@@ -15,12 +16,50 @@ mongoose.connect('mongodb://localhost:27017/mydatabase', {
   useUnifiedTopology: true,
 });
 
-const ingredientImg = new mongoose.Schema({
+const recipeBasicSchema = new mongoose.Schema({
+  id: String,
+  name: String,
+  image: String,
+  link: String,
+});
+
+const recipeSchema = new mongoose.Schema({
+  id: String,
+  title: String,
+  image: String,
+  servingSize: String,
+  description: String,
+  isVegetarian: String,
+  isVegan: String,
+  isDairyFree: String,
+  isGlutenFree: String,
+  totalCookingTime: String,
+  calories: String,
+  carbs: String,
+  fat: String,
+  protein: String,
+  instructions: [String],
+  ingredients: [{ id: String, name: String }], 
+  ingredientAmounts: [String],
+  tips: [String],
+});
+
+const recipe = mongoose.model('recipes', recipeSchema);
+
+const recipeListSchema = new mongoose.Schema({
+  date: String,
+  searchTerm: String,
+  recipes: [recipeBasicSchema],
+});
+
+const recipeList = mongoose.model('recipelists', recipeListSchema);
+
+const ingredientImgSchema = new mongoose.Schema({
   dbingredient: String,
   image: String,
 });
 
-const ingredImg = mongoose.model('ingredientlist', ingredientImg);
+const ingredImg = mongoose.model('ingredientlist', ingredientImgSchema);
 
 const IngredientSchema = new mongoose.Schema({
   dbingredient: String,
@@ -31,6 +70,21 @@ const IngredientSchema = new mongoose.Schema({
 });
 
 const Item = mongoose.model('shoppinglist', IngredientSchema);
+
+const fairpriceItemSchema = new mongoose.Schema({
+    name: String,
+    price: String,
+    image: String,
+    quantity: String,
+    link: String,
+});
+
+const fairpriceSchema = new mongoose.Schema({
+  search: String,
+  productList: [fairpriceItemSchema],
+});
+
+const fairpriceItems = mongoose.model('fairpriceitems', fairpriceSchema);
 
 app.use(cors());
 
@@ -134,19 +188,26 @@ app.delete('/api/clear-ingredients', async (req, res) => {
 
 app.get('/api/randomRecipes', async (req, res) => {
   try {
+    const today = new Date();
+    //Check if the api has been already called today, if so retrieve from database
+    const check = await recipeList.findOne({ date: today.toDateString() });
+    if ( check ) {
+      res.json( check.recipes );
+    } else {
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?number=8' + '&' + spoonacularKey);
+      const results = apiResponse.data.recipes.map((recipe) => {
+        return {
+          id: recipe.id,
+          name: recipe.title,
+          image: recipe.image,
+          link: "/recipe/".concat(recipe.id),
+        };
+      });
+      const newRecipeList = new recipeList({ date: today.toDateString(), recipes: results });
+      await newRecipeList.save();
 
-    const apiResponse = await axios.get('https://api.spoonacular.com/recipes/random?number=8' + '&' + spoonacularKey);
-
-    results = apiResponse.data.recipes.map((recipe) => {
-      return {
-        id: recipe.id,
-        name: recipe.title,
-        image: recipe.image,
-        link: "/recipe/".concat(recipe.id),
-      };
-    });
-
-    res.json({ results });
+      res.json( results );
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Error retrieving data' });
@@ -156,18 +217,27 @@ app.get('/api/randomRecipes', async (req, res) => {
 app.get('/api/recipeSearch', async (req, res) => {
   try {
     const ingredients = req.query.ingredients;
-    const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?limitLicense=true&ingredients='.concat(ingredients) + '&' + spoonacularKey);
+    //Check if the search has been done before, if so retrieve from database
+    const check = await recipeList.findOne({ searchTerm: ingredients });
+    if (check) { 
+      res.json( check.recipes );
+    } else {
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/findByIngredients?limitLicense=true&ingredients='.concat(ingredients) + '&' + spoonacularKey);
 
-    results = apiResponse.data.map((recipe) => {
-      return {
-        id: recipe.id,
-        name: recipe.title,
-        image: recipe.image,
-        link: "/recipe/".concat(recipe.id),
-      };
-    });
+      results = apiResponse.data.map((recipe) => {
+        return {
+          id: recipe.id,
+          name: recipe.title,
+          image: recipe.image,
+          link: "/recipe/".concat(recipe.id),
+        };
+      });
 
-    res.json({ results });
+      const newRecipeList = new recipeList({ searchTerm: ingredients, recipes: results });
+      await newRecipeList.save();
+
+      res.json( results );
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Error retrieving data' });
@@ -177,48 +247,57 @@ app.get('/api/recipeSearch', async (req, res) => {
 app.get('/api/recipeGet', async (req, res) => {
   try {
     const id = req.query.id;
-    const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information' + '?' + spoonacularKey);
-    const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json' + '?' + spoonacularKey);
+    //Check if we already have the receipe in the database, if so retrieve from database
+    const check = await recipe.findOne({ id: id });
+    if (check) {  
+      res.json(check);
+    } else {
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/information' + '?' + spoonacularKey);
+      const apiResponse2 = await axios.get('https://api.spoonacular.com/recipes/' + id.toString() + '/nutritionWidget.json' + '?' + spoonacularKey);
 
-    const data = apiResponse.data;
-    const nutrition = apiResponse2.data;
+      const data = apiResponse.data;
+      const nutrition = apiResponse2.data;
 
-    let counter = 0;
+      let counter = 0;
 
-    const imageURL = "https://spoonacular.com/cdn/ingredients_250x250/";
+      const imageURL = "https://spoonacular.com/cdn/ingredients_250x250/";
 
-    data.extendedIngredients.forEach(async (ingredient) => {
-      const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
-      if (!existing) {
-        const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
-        await newIngred.save();
-      }
-    });
+      data.extendedIngredients.forEach(async (ingredient) => {
+        const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
+        if (!existing) {
+          const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
+          await newIngred.save();
+        }
+      });
 
-    let recipe = {
-      id: data.id,
-      title: data.title,
-      image: data.image,
-      servingSize: data.servings,
-      description: data.summary.split('.')[0].replace(/<[^>]*>/g, '') + '.',
-      isVegetarian: data.vegetarian,
-      isVegan: data.vegan,
-      isDairyFree: data.dairyFree,
-      isGlutenFree: data.glutenFree,
-      totalCookingTime: data.readyInMinutes,
-      calories: nutrition.calories,
-      carbs: nutrition.carbs,
-      fat: nutrition.fat,
-      protein: nutrition.protein,
-      instructions: data.instructions.replace(/<[^>]*>/g, '').split(/[.\n]/).filter((instruction) => { return instruction !== '' }),
-      ingredients: data.extendedIngredients.map((ingredient) => {
-        counter++;
-        return { id: counter, name: ingredient.originalName };
-      }),
-      ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
-    };
+      const newRecipe = {
+        id: data.id,
+        title: data.title,
+        image: data.image,
+        servingSize: data.servings,
+        description: data.summary.split('.')[0].replace(/<[^>]*>/g, '') + '.',
+        isVegetarian: data.vegetarian,
+        isVegan: data.vegan,
+        isDairyFree: data.dairyFree,
+        isGlutenFree: data.glutenFree,
+        totalCookingTime: data.readyInMinutes,
+        calories: nutrition.calories,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat,
+        protein: nutrition.protein,
+        instructions: data.instructions.replace(/<[^>]*>/g, '').split(/[.\n]/).filter((instruction) => { return instruction !== '' }),
+        ingredients: data.extendedIngredients.map((ingredient) => {
+          counter++;
+          return { id: counter, name: ingredient.originalName };
+        }),
+        ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
+        tip: [],
+      };
 
-    res.json({ recipe });
+      new recipe(newRecipe).save();
+
+      res.json( newRecipe );
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Error retrieving data' });
@@ -226,21 +305,37 @@ app.get('/api/recipeGet', async (req, res) => {
 });
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: process.env.openAIKey,
 });
 
 app.get('/api/getTips', async (req, res) => {
-  const prompt = `Generate 10 cooking tips for the recipe: ${req.query.name}. Deliver your response as an array of unordered strings that allows direct parsing into JSON code. Do not provide any other response before or after the code. The tips should be short and sweet, at most two lines, and should be slightly more interesting, lesser-known, or expert tips. The ingredients are ${req.query.ingredients}. The instructions are ${req.query.instructions}. Remember, do not use any form of numbered bullet points.`;
+  const id = req.query.id;
   try {
-    async function main() {
-      const chatCompletion = await openai.chat.completions.create({
-        messages: [{ role: 'user', content: prompt }],
-        model: 'gpt-3.5-turbo',
-      });
-      data = JSON.parse(chatCompletion.choices[0].message.content)
-      res.send(data);
+    const check = await recipe.findOne({ id: id }, { tips: 1 });
+    //Check if we have already queried Chatgpt for tips before, if so retrieve from database
+    if ( check.tips.length > 0 ) {  
+      res.json( check.tips );
+    } else {
+      const search = await recipe.findOne({ id: id });
+      const prompt = `Generate 10 cooking tips for the recipe: ${search.title}. 
+      Deliver your response as an array of unordered strings that allows direct parsing into JSON code. 
+      Do not provide any other response before or after the code. 
+      The tips should be short and sweet, at most two lines, and should be slightly more interesting, lesser-known, or expert tips. 
+      The ingredients are ${search.ingredients.map((ingredient) => ingredient.name ).toString()}. 
+      The instructions are ${search.instructions.toString()}. 
+      Remember, do not use any form of numbered bullet points.`;
+
+      async function main() {
+        const chatCompletion = await openai.chat.completions.create({
+          messages: [{ role: 'user', content: prompt }],
+          model: 'gpt-3.5-turbo',
+        });
+        const data = JSON.parse(chatCompletion.choices[0].message.content)
+        await recipe.updateOne({ id: id }, { $set: { tips: data } }); 
+        res.send(data);
+      }
+      main();     
     }
-    main();
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -302,11 +397,20 @@ app.get('/api/getFairpriceItems', async (req, res) => {
     const searchTerm = req.query.searchTerm;
     const cleanSearchTerm = findNouns(searchTerm);
     console.log(cleanSearchTerm);
-    const productList = await scrape(cleanSearchTerm);
-    if (productList.length == 0) {
-      res.status(404).json({ success: false, message: 'No products found' });
+    //Check if we have already scrap Fariprice before, if so retrieve from database
+    const check = await fairpriceItems.findOne({ search: cleanSearchTerm });
+    console.log(check);
+    if ( check ) {  
+      res.json( check.productList );
+    } else {
+      const productList = await scrape(cleanSearchTerm);
+      if (productList.length == 0) {
+        res.status(404).json({ success: false, message: 'No products found' });
+      }
+      const newFairpriceItems = new fairpriceItems({ search: cleanSearchTerm, productList: productList });
+      await newFairpriceItems.save();
+      res.json( productList );
     }
-    res.json({ productList });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Error retrieving data' });
