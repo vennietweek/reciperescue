@@ -61,6 +61,15 @@ const ingredientImgSchema = new mongoose.Schema({
 
 const ingredImg = mongoose.model('ingredientlist', ingredientImgSchema);
 
+
+const ingredientWeightSchema = new mongoose.Schema({
+  ingredientName: String,
+  sourceUnit: String,
+  amountInGram: Number,
+});
+
+const ingredWeight = mongoose.model('ingredientWeight', ingredientWeightSchema);
+
 const IngredientSchema = new mongoose.Schema({
   dbingredient: String,
   price: String,
@@ -203,6 +212,7 @@ app.get('/api/randomRecipes', async (req, res) => {
           link: "/recipe/".concat(recipe.id),
         };
       });
+      // Cache the daily random recipes in the database
       const newRecipeList = new recipeList({ date: today.toDateString(), recipes: results });
       await newRecipeList.save();
 
@@ -233,6 +243,7 @@ app.get('/api/recipeSearch', async (req, res) => {
         };
       });
 
+      // Cache the search results in the database
       const newRecipeList = new recipeList({ searchTerm: ingredients, recipes: results });
       await newRecipeList.save();
 
@@ -270,6 +281,7 @@ app.get('/api/recipeGet', async (req, res) => {
         }
       });
 
+      // Cache the recipe in the database
       const newRecipe = {
         id: data.id,
         title: data.title,
@@ -304,6 +316,32 @@ app.get('/api/recipeGet', async (req, res) => {
   }
 });
 
+app.get('/api/convertWeight', async (req, res) => {
+  try {
+    const ingredient = req.query.ingredient;
+    const amount = req.query.amount.split(' ');
+    const sourceUnit = amount[1];
+    const quantity = parseFloat(amount[0]);
+    //Check if we already have the conversion in the database, if so retrieve from database
+    const check = await ingredWeight.findOne({ ingredientName: ingredient, sourceUnit: sourceUnit });
+    if (check) { 
+      const newAmount = quantity * check.amountInGram;
+      res.json( newAmount.toFixed(1) + ' ' + 'grams' );
+    } else {
+      // Call API to convert the units of ingredient to grams
+      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/convert?ingredientName=' + ingredient + '&sourceAmount=' + quantity.toString() + '&sourceUnit=' + sourceUnit + '&targetUnit=grams&' + spoonacularKey);
+      const data = apiResponse.data;
+      // Cache the conversion in the database
+      const newIngredWeight = new ingredWeight({ ingredientName: ingredient, sourceUnit: sourceUnit, amountInGram: parseFloat((data.targetAmount / quantity).toFixed(1)) });
+      await newIngredWeight.save();
+      res.json( data.targetAmount.toString() + ' ' + 'grams' );
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error retrieving data' });
+  }
+});
+
 const openai = new OpenAI({
   apiKey: process.env.openAIKey,
 });
@@ -331,6 +369,7 @@ app.get('/api/getTips', async (req, res) => {
           model: 'gpt-3.5-turbo',
         });
         const data = JSON.parse(chatCompletion.choices[0].message.content)
+        // Cache the tips in the database
         await recipe.updateOne({ id: id }, { $set: { tips: data } }); 
         res.send(data);
       }
@@ -407,6 +446,7 @@ app.get('/api/getFairpriceItems', async (req, res) => {
       if (productList.length == 0) {
         res.status(404).json({ success: false, message: 'No products found' });
       }
+      //Cache the scraped results in the database
       const newFairpriceItems = new fairpriceItems({ search: cleanSearchTerm, productList: productList });
       await newFairpriceItems.save();
       res.json( productList );

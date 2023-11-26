@@ -12,6 +12,8 @@ db.createCollection("fairpriceitems")
 
 db.createCollection("recipes")
 
+db.createCollection("ingredientWeight")
+
 db.recipes.insertMany([
     {
         id: "1",

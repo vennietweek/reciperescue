@@ -6,7 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/RecipeInfo.css';
 
 export function RecipeIngredients(props) {
-  const { ingredients, ingredientAmounts } = props;
+  const [ingredients, setIngredients] = useState(props.ingredients);
+  const [ingredientAmounts, setIngredientAmounts] = useState(props.ingredientAmounts);
 
   // State to track checked ingredients
   const [checkedState, setCheckedState] = useState(
@@ -30,6 +31,31 @@ export function RecipeIngredients(props) {
     setCheckedState(new Array(ingredients.length).fill(false));
   };
 
+  const handleConvert = async (event) => {
+    event.preventDefault();
+    const newQuantity = [...ingredientAmounts];
+    const ingredientlist = [...ingredients];
+    console.log(ingredientlist);
+    const quantity = [...ingredientAmounts];
+    console.log(quantity);
+    try {
+      for (let i = 0; i < ingredientlist.length; i++) {
+        if (checkedState[i] === true) {
+          const response = await axios.get('http://localhost:4000/api/convertWeight?ingredient=' + ingredientlist[i].name + "&amount="  + quantity[i]);
+          console.log(response.data);
+          newQuantity[i] = response.data;
+        }
+      }
+      console.log(newQuantity);
+      setIngredientAmounts(newQuantity);
+      // reset the the checks
+      setCheckedState(new Array(ingredients.length).fill(false));
+      console.log('Ingredients converted successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const dbingredient = ingredients.filter((_, index) => checkedState[index]).map((ingredient) => ingredient.name);
@@ -44,7 +70,7 @@ export function RecipeIngredients(props) {
       console.log('Ingredients added successfully!');
       console.log('Ingredients in shopping list:', response.data);
     } catch (error) {
-      console.error('Error adding user:', error);
+      console.error('Error:', error);
     }
   };
 
@@ -73,6 +99,9 @@ export function RecipeIngredients(props) {
               Deselect all
             </Button>
             <div className="spacer"></div>
+            <Button variant="primary" onClick={handleConvert} className="ingredient-add-to-list">
+              Convert to Grams
+            </Button>
             <Button type="submit" variant="primary" className="ingredient-add-to-list">
               Add to Shopping List
             </Button>
