@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
+import Modal from 'react-modal';
 import './CustomSearchBox.css'
 
 function CustomSearchBox() {
   const [dbingredients, setDBIngredients] = useState([]);
+  var openModalId = ''
   useEffect(() => { //setting up a "database" of ingredients
     setDBIngredients([
       {
@@ -27,7 +31,6 @@ function CustomSearchBox() {
       },
     ]);
   }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,7 +59,6 @@ function CustomSearchBox() {
 
     fetchData();
   }, []);
-
   const [userInput, setUserInput] = useState('');
   const [filteredIngredients, setFilteredIngredients] = useState([]);
   const [selectedIngredient, setSelectedIngredient] = useState(null);
@@ -105,6 +107,7 @@ function CustomSearchBox() {
     const quantity = Number(e.target.quantity.value); //user input of ingredient quantity
     const imageUploaded = e.target.image.files[0]; //user input of ingredient image
     const imageLink = null;
+    const measurement = e.target.measurement.value;
     const id = uuidv4(); //generated id for user input of ingredient
     if (!imageUploaded) { //handling error for no image uploaded
       alert('Please select an image.');
@@ -125,6 +128,7 @@ function CustomSearchBox() {
       quantity,
       imageUploaded,
       imageLink,
+      measurement,
       id,
     };
 
@@ -136,13 +140,15 @@ function CustomSearchBox() {
     setShowSuggestions(true);
   };
 
-  const deleteIngredient = async (id) => { //handling delete ingredients by id 
+  const deleteIngredient = async (id) => { //handling delete ingredients by id
     try {
-      // Make API request to delete ingredient by id 
+      // Make API request to delete ingredient by id
       await fetch(`http://localhost:4000/api/del-ingredients/${id}`, {
         method: 'DELETE',
+        // Additional headers or authentication tokens if needed
       });
-      // Update the state after successful deletion 
+
+      // Update the state after successful deletion
       const newListings = listings.filter((listing) => listing.id !== id);
       setListings(newListings);
     } catch (error) {
@@ -152,16 +158,19 @@ function CustomSearchBox() {
 
   const decreaseQuantity = async (id) => {
     try {
-      // Make API request to decrease quantity of ingredient by id 
+      // Make API request to decrease quantity of ingredient by id
       const response = await fetch(`http://localhost:4000/api/decrease-quantity/${id}`, {
-        method: 'PUT', // Use PUT for updating resources 
+        method: 'PUT', // Use PUT for updating resources
+        // Additional headers or authentication tokens if needed
       });
+
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(`Failed to decrease quantity: ${errorMessage}`);
       }
-      // Assuming you have a state variable named 'listings' and a setter 'setListings' 
-      // Update the state after successful decrease in quantity 
+
+      // Assuming you have a state variable named 'listings' and a setter 'setListings'
+      // Update the state after successful decrease in quantity
       setListings((ogListings) =>
         ogListings.map((listing) =>
           listing.id === id ? { ...listing, quantity: Math.max(1, listing.quantity - 1) } : listing
@@ -174,16 +183,19 @@ function CustomSearchBox() {
 
   const increaseQuantity = async (id) => {
     try {
-      // Make API request to increase quantity of ingredient by id 
+      // Make API request to increase quantity of ingredient by id
       const response = await fetch(`http://localhost:4000/api/increase-quantity/${id}`, {
-        method: 'PUT', // Use PUT for updating resources 
+        method: 'PUT', // Use PUT for updating resources
+        // Additional headers or authentication tokens if needed
       });
+
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(`Failed to increase quantity: ${errorMessage}`);
       }
-      // Assuming you have a state variable named 'listings' and a setter 'setListings' 
-      // Update the state after successful increase in quantity 
+
+      // Assuming you have a state variable named 'listings' and a setter 'setListings'
+      // Update the state after successful increase in quantity
       setListings((ogListings) =>
         ogListings.map((listing) =>
           listing.id === id ? { ...listing, quantity: Math.min(999, listing.quantity + 1) } : listing
@@ -194,33 +206,169 @@ function CustomSearchBox() {
     }
   };
 
-
   const clearListings = async () => {
     try {
-      // Make API request to clear all ingredients 
+      // Make API request to clear all ingredients
       const response = await fetch('http://localhost:4000/api/clear-ingredients', {
         method: 'DELETE',
+        // Additional headers or authentication tokens if needed
       });
+
       if (!response.ok) {
         const errorMessage = await response.text();
         throw new Error(`Failed to clear ingredients: ${errorMessage}`);
       }
-      // Update the state after successful clearing 
+
+      // Update the state after successful clearing
       setListings([]);
     } catch (error) {
       console.error('Error clearing ingredients:', error);
     }
   };
-
   const totalValue = listings.reduce((total, listing) => total + listing.price * listing.quantity, 0);
   const roundedTotalValue = totalValue.toFixed(2);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState(null);
+
+  const openModal = (items) => {
+    setModalContent(items);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPrice(null);
+  };
+
+  const handleSelectPrice = async (id, name, listingqty, price, original_name, measurement, qty) => {
+    var new_qty = 1
+    setModalContent(
+    <div>
+      <p>In your shopping list, you require:</p>
+      <p>Ingredient: {original_name} {measurement}</p>
+      <p>Quantity: {qty}</p>
+      <br/>
+      <p>You are looking to purchase:</p>
+      {listingqty ? (
+  <p>Item: {name} {listingqty}</p>
+) : (
+  <p>Item: {name}</p>
+)}      {/* <p>Quantity: {new_qty}</p> */}
+      <label htmlFor="newQty">Quantity:</label>
+      <input
+        type="number"
+        id="newQty"
+        name="newQty"
+        defaultValue={new_qty}
+        min="1"
+        max="999"
+      />
+      <br/>
+      <button
+  className="select-button"
+  onClick={() => {
+    const newQtyValue = parseInt(document.getElementById('newQty').value, 10);
+    if (0 < newQtyValue && newQtyValue < 1000) {
+      handleSave(id, name, price, listingqty, newQtyValue);
+    }else {
+      alert('Quantity should be between 1 and 999');
+    }
+  }}
+>
+  Save
+</button>
+    </div>
+    )
+  }
+  
+  const handleSave = async(id, name, price, listingqty, qty) => {
+    closeModal();
+
+    price = price.replace('$', '')
+    var listingMeasurement = ''
+    if (listingqty) {
+      listingMeasurement = "(" + listingqty + ")"
+    }
+    setListings((ogListings) =>
+      ogListings.map((listing) =>
+        listing.id === id ? { ...listing, ingredient: name, price: price, measurement:listingMeasurement, quantity: qty } : listing
+      )
+    );
+
+    const response = await fetch(`http://localhost:4000/api/update-ingredient/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, price, listingqty, qty }),
+    });
+
+    // setSelectedPrice(price);
+  };
+
+  const checkPrice = async (listingId, listingIngredient, listingMeasurement, listingQuantity) => {
+    const modalId = uuidv4(); // Generate a new UUID for each modal instance
+    openModalId = modalId
+    try {
+      openModal('loading')
+      const response = await fetch(`http://localhost:4000/api/getFairpriceItems?searchTerm=${encodeURIComponent(listingIngredient)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+
+      const data = await response.json();
+
+      if (data.length > 0) {
+        const items = data.map(item => (
+          <tr key={item.name}>
+            <td>{item.name}</td>
+            <td>{item.quantity}</td>
+            <td>{item.price}</td>
+            <td>
+              <button className="select-button" onClick={() => handleSelectPrice(listingId, `${item.name}`, `${item.quantity}`, `${item.price}`, listingIngredient, listingMeasurement, listingQuantity)}>
+                Select
+              </button>
+            </td>
+          </tr>
+        ));
+        if (openModalId === modalId) {
+          setModalContent(
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items}
+              </tbody>
+            </table>
+          );
+        }
+
+      } else {
+        if (openModalId === modalId) {
+          setModalContent('No prices found for the specified ingredient.');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      if (openModalId === modalId) {
+        setModalContent('An error occurred while fetching prices.');
+      }
+    }
+  };
 
   return (
     <div>
       <div id="shopping_list" className="custom-search-box">
         <div id="add-ingredient-container">
-          <input //input for add ingredients search bar 
+          <input //input for add ingredients search bar
             type="text"
             placeholder="Add ingredients..."
             value={userInput}
@@ -228,7 +376,7 @@ function CustomSearchBox() {
             onClick={toggleDropdown}
             ref={inputRef}
           />
-          {showSuggestions && userInput && ( //show suggestions of existing ingredients in database as well as user input in the dropdown 
+          {showSuggestions && userInput && ( //show suggestions of existing ingredients in database as well as user input in the dropdown
             <ul className="custom-dropdown" ref={dropDownRef}>
               {filteredIngredients.map((ingredient, index) => (
                 <li key={index} onClick={() => handleItemClick(ingredient)}>
@@ -238,7 +386,7 @@ function CustomSearchBox() {
             </ul>
           )}
         </div>
-        {showForm && selectedIngredient && ( //accept user input of details of selected ingredient 
+        {showForm && selectedIngredient && ( //accept user input of details of selected ingredient
           <div className="custom-form">
             <h3>{selectedIngredient}</h3>
             <form onSubmit={handleFormSubmit}>
@@ -271,7 +419,8 @@ function CustomSearchBox() {
                     ${listing.price}
                   </div>
                 ) : (
-                  <button className="check-price-button" onClick={() => alert(listing.ingredient)}>Check Price</button>
+                  // <button className="check-price-button" onClick={() => alert(listing.ingredient)}>Check Price</button>
+                  <button className="check-price-button" onClick={() => checkPrice(listing.id, listing.ingredient, listing.measurement, listing.quantity)}>Check Price</button>
                 )}
               </div>
             </div>
@@ -289,8 +438,39 @@ function CustomSearchBox() {
         ))}
         <p>Total Price: ${roundedTotalValue}</p>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          },
+          content: {
+            width: '70%', // Increase the width for the table
+            margin: 'auto',
+          },
+        }}
+      >
+        <div>
+          <button className="x-button" onClick={closeModal} style={{ float: 'right' }}>X</button>
+          <h2>Price Information:</h2>
+          {modalContent === 'loading' ? (
+            <center><FontAwesomeIcon icon={faSpinner} spin size="3x" style={{ color: '#6f66f0' }} /></center>
+          ) : (
+            <div>{modalContent}</div>
+          )}
+        </div>
+      </Modal>
+
+      {selectedPrice && (
+        <div>
+          <p>Selected Price: {selectedPrice}</p>
+          {/* Render other components or perform actions with the selected price */}
+        </div>
+      )}
     </div>
   );
 }
+
 
 export default CustomSearchBox;

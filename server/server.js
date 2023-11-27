@@ -126,6 +126,20 @@ app.get('/api/ingredients', async (req, res) => {
   res.json(items);
 });
 
+app.put('/api/update-ingredient/:id', async (req, res) => {
+  const itemId = req.params.id;
+  const { name, price, listingqty, qty } = req.body;
+
+  try {
+    // Update the item with the new name and price
+    await Item.updateOne({ _id: itemId }, { dbingredient: name, price: price, measurement: listingqty, quantity: qty });
+
+  } catch (error) {
+    console.error('Error increasing quantity:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 app.put('/api/increase-quantity/:id', async (req, res) => {
   const itemId = req.params.id;
   try {
