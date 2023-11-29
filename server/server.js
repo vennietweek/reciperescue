@@ -112,10 +112,19 @@ app.post('/api/ingredients', async (req, res) => {
     } else {
       const ingredient = await ingredImg.findOne({ dbingredient: dbingredient[i] });
       console.log(ingredient);
-      const newItem = new Item({ dbingredient: dbingredient[i], price: '', quantity: amount, image: ingredient.image ? ingredient.image : '', measurement: measurement });
+      const newItem = new Item({ dbingredient: dbingredient[i], price: '', quantity: amount, image: (ingredient && ingredient.image) ? ingredient.image : 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png', measurement: measurement });
       await newItem.save();
     }
   }
+  const items = await Item.find();
+
+  res.json(items);
+});
+
+app.post('/api/add-ingredient', async (req, res) => {
+  const { dbingredient, quantity, measurement, price } = req.body;
+  const newItem = new Item({ dbingredient: dbingredient, price: price, quantity: quantity, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png', measurement: measurement });
+  await newItem.save();
   const items = await Item.find();
 
   res.json(items);
@@ -128,11 +137,11 @@ app.get('/api/ingredients', async (req, res) => {
 
 app.put('/api/update-ingredient/:id', async (req, res) => {
   const itemId = req.params.id;
-  const { name, price, listingqty, qty } = req.body;
+  const { name, price, listingqty, qty, image } = req.body;
 
   try {
     // Update the item with the new name and price
-    await Item.updateOne({ _id: itemId }, { dbingredient: name, price: price, measurement: listingqty, quantity: qty });
+    await Item.updateOne({ _id: itemId }, { dbingredient: name, price: price, measurement: listingqty, quantity: qty, image: image });
 
   } catch (error) {
     console.error('Error increasing quantity:', error);

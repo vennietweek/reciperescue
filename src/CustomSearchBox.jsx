@@ -101,38 +101,79 @@ function CustomSearchBox() {
     setShowSuggestions(false); //turn off suggestions after user selected ingredient
   };
 
-  const handleFormSubmit = (e) => {  //allow user input details of the ingredients they want to add
+  const handleFormSubmit = async (e) => {  //allow user input details of the ingredients they want to add
     e.preventDefault();
     const price = e.target.price.value; //user input of ingredient price
     const quantity = Number(e.target.quantity.value); //user input of ingredient quantity
-    const imageUploaded = e.target.image.files[0]; //user input of ingredient image
-    const imageLink = null;
+    // const imageUploaded = e.target.image.files[0]; //user input of ingredient image
+    const imageUploaded = null; //user input of ingredient image
+    const imageLink = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png';
     const measurement = e.target.measurement.value;
     const id = uuidv4(); //generated id for user input of ingredient
-    if (!imageUploaded) { //handling error for no image uploaded
-      alert('Please select an image.');
-      return;
-    }
-    if (!price) { //handling error for no price uploaded
-      alert('Please enter price.');
-      return;
-    }
+    // if (!imageUploaded) { //handling error for no image uploaded
+    //   alert('Please select an image.');
+    //   return;
+    // }
+    // if (!price) { //handling error for no price uploaded
+    //   alert('Please enter price.');
+    //   return;
+    // }
     if (!quantity) { //handling error for no quantity uploaded
       alert('Please enter quantity.');
       return;
     }
-
     const newListing = {  //creation of a new listing
       ingredient: selectedIngredient,
       price,
       quantity,
       imageUploaded,
       imageLink,
-      measurement,
+      measurement: "(" + measurement + ")",
       id,
     };
 
-    setListings([...listings, newListing]);
+    const input = {
+      dbingredient: selectedIngredient,
+      quantity: quantity,
+      measurement: measurement,
+      price: price,
+    };
+
+    try {
+      const response = await fetch('http://localhost:4000/api/add-ingredient', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Success:', data);
+      // Handle the response data as needed
+      // Map the API response to the format used in your setListings state
+      const mappedData = data.map((item) => ({
+        ingredient: item.dbingredient,
+        price: item.price === "" ? null : item.price,
+        quantity: parseInt(item.quantity, 10) || 0, // Assuming quantity is a number
+        imageLink: item.image,
+        measurement: item.measurement ? "(" + item.measurement + ")" : "",
+        imageUploaded: null, // Assuming you want to initialize this to null
+        id: item._id,
+      }));
+
+      setListings(mappedData);
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle errors
+    }
+
+
+    // setListings([...listings, newListing]);
     setShowForm(false);
   };
 
@@ -242,48 +283,48 @@ function CustomSearchBox() {
     setSelectedPrice(null);
   };
 
-  const handleSelectPrice = async (id, name, listingqty, price, original_name, measurement, qty) => {
+  const handleSelectPrice = async (id, name, listingqty, price, image, original_name, measurement, qty) => {
     var new_qty = 1
     setModalContent(
-    <div>
-      <p>In your shopping list, you require:</p>
-      <p>Ingredient: {original_name} {measurement}</p>
-      <p>Quantity: {qty}</p>
-      <br/>
-      <p>You are looking to purchase:</p>
-      {listingqty ? (
-  <p>Item: {name} {listingqty}</p>
-) : (
-  <p>Item: {name}</p>
-)}      {/* <p>Quantity: {new_qty}</p> */}
-      <label htmlFor="newQty">Quantity:</label>
-      <input
-        type="number"
-        id="newQty"
-        name="newQty"
-        defaultValue={new_qty}
-        min="1"
-        max="999"
-      />
-      <br/>
-      <button
-  className="select-button"
-  onClick={() => {
-    const newQtyValue = parseInt(document.getElementById('newQty').value, 10);
-    if (0 < newQtyValue && newQtyValue < 1000) {
-      handleSave(id, name, price, listingqty, newQtyValue);
-    }else {
-      alert('Quantity should be between 1 and 999');
-    }
-  }}
->
-  Save
-</button>
-    </div>
+      <div>
+        <p>In your shopping list, you require:</p>
+        <p>Ingredient: {original_name} {measurement}</p>
+        <p>Quantity: {qty}</p>
+        <br />
+        <p>You are looking to purchase:</p>
+        {listingqty ? (
+          <p>Item: {name} {listingqty}</p>
+        ) : (
+          <p>Item: {name}</p>
+        )}      {/* <p>Quantity: {new_qty}</p> */}
+        <label htmlFor="newQty">Quantity:</label>
+        <input
+          type="number"
+          id="newQty"
+          name="newQty"
+          defaultValue={new_qty}
+          min="1"
+          max="999"
+        />
+        <br />
+        <button
+          className="select-button"
+          onClick={() => {
+            const newQtyValue = parseInt(document.getElementById('newQty').value, 10);
+            if (0 < newQtyValue && newQtyValue < 1000) {
+              handleSave(id, name, price, image, listingqty, newQtyValue);
+            } else {
+              alert('Quantity should be between 1 and 999');
+            }
+          }}
+        >
+          Save
+        </button>
+      </div>
     )
   }
-  
-  const handleSave = async(id, name, price, listingqty, qty) => {
+
+  const handleSave = async (id, name, price, image, listingqty, qty) => {
     closeModal();
 
     price = price.replace('$', '')
@@ -293,7 +334,7 @@ function CustomSearchBox() {
     }
     setListings((ogListings) =>
       ogListings.map((listing) =>
-        listing.id === id ? { ...listing, ingredient: name, price: price, measurement:listingMeasurement, quantity: qty } : listing
+        listing.id === id ? { ...listing, ingredient: name, price: price, imageLink: image, measurement: listingMeasurement, quantity: qty } : listing
       )
     );
 
@@ -302,7 +343,7 @@ function CustomSearchBox() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, price, listingqty, qty }),
+      body: JSON.stringify({ name, price, listingqty, qty, image }),
     });
 
     // setSelectedPrice(price);
@@ -319,7 +360,6 @@ function CustomSearchBox() {
       }
 
       const data = await response.json();
-
       if (data.length > 0) {
         const items = data.map(item => (
           <tr key={item.name}>
@@ -327,7 +367,7 @@ function CustomSearchBox() {
             <td>{item.quantity}</td>
             <td>{item.price}</td>
             <td>
-              <button className="select-button" onClick={() => handleSelectPrice(listingId, `${item.name}`, `${item.quantity}`, `${item.price}`, listingIngredient, listingMeasurement, listingQuantity)}>
+              <button className="select-button" onClick={() => handleSelectPrice(listingId, `${item.name}`, `${item.quantity}`, `${item.price}`, `${item.image}`, listingIngredient, listingMeasurement, listingQuantity)}>
                 Select
               </button>
             </td>
@@ -386,13 +426,32 @@ function CustomSearchBox() {
             </ul>
           )}
         </div>
+      </div>
+      <div>
         {showForm && selectedIngredient && ( //accept user input of details of selected ingredient
           <div className="custom-form">
             <h3>{selectedIngredient}</h3>
             <form onSubmit={handleFormSubmit}>
-              <input type="number" name="price" placeholder="Price" />
-              <input type="number" name="quantity" placeholder="Quantity" />
-              <input type="file" name="image" accept="image/*" />
+              <div className="form-group">
+                <label htmlFor="price">Price (Optional)</label>
+                <input type="number" name="price" id="price" step="0.01"/>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="measurement">Measurement</label>
+                <input type="text" name="measurement" id="measurement" required />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="quantity">Quantity</label>
+                <input type="number" name="quantity" id="quantity" required />
+              </div>
+
+              {/* <div className="form-group">
+                <label htmlFor="image">Image (Optional)</label>
+                <input type="file" name="image" id="image" accept="image/*" />
+              </div> */}
+
               <button className="submit-button" type="submit">Submit</button>
             </form>
           </div>
