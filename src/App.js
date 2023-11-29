@@ -1,12 +1,11 @@
-import './App.css';
+import './styles/App.css';
 import Navbar from './containers/Navbar.js';
 import Search from './pages/Search.js';
 import 'font-awesome/css/font-awesome.min.css';
 import React, { useState } from 'react';
-import CustomSearchBox from './CustomSearchBox';
-import NutritionTable from './NutritionTable';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { RecipeInfoPage } from './pages/RecipeInfoPage.js';
+import { ShoppingListPage } from './pages/ShoppingListPage.js';
 
 function Home(){
   return(
@@ -41,7 +40,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home/>} />
-        <Route path="/shopping_list" element={<ShoppingList/>} />
+        <Route path="/shopping_list" element={<ShoppingListPage/>} />
         <Route path ="/recipe/:id" element={<RecipeInfoPage/>} />
       </Routes>
     </Router>

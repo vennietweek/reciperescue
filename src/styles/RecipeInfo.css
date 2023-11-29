@@ -51,6 +51,10 @@ body {
     padding-bottom: 8px;
 }
 
+.recipe-ingredients-header {
+    display: flex;
+}
+
 .custom-checkbox .form-check {
     display: flex;
     align-items: center;
@@ -95,6 +99,23 @@ body {
 
 .ingredient-add-to-list:hover {
     background-color: #9244ff; 
+}
+
+.ingredient-conversion {
+    margin-left: auto;
+    height: 40px;
+}
+
+.ingredient-convert-button-active {
+    background-color: white;
+    color: black; 
+    border: 1px solid grey;
+}
+
+.ingredient-convert-button-inactive {
+    background-color: grey;
+    color: white; 
+    border: 1px solid grey;
 }
 
 /* Recipe Instructions */

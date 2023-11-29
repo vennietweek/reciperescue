@@ -1,5 +1,5 @@
 import React from 'react';
-import './NutritionTable.css'
+import '../styles/NutritionTable.css'
 
 function NutritionTable() {
   const nutritionData = [

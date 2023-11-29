@@ -1,14 +1,29 @@
-import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Form, Button, ButtonGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/RecipeInfo.css';
 
 export function RecipeIngredients(props) {
-  const [ingredients, setIngredients] = useState(props.ingredients);
+  const [ingredients] = useState(props.ingredients);
   const [ingredientAmounts, setIngredientAmounts] = useState(props.ingredientAmounts);
+  const [unitSystem, setUnitSystem] = useState('imperial'); 
+  const [metricQuantities, setMetricQuantities] = useState([...props.ingredientAmounts]);
+  const [imperialQuantities] = useState([...props.ingredientAmounts]);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchAndConvertIngredients = async () => {
+      for (let i = 0; i < ingredients.length; i++) {
+        const response = await axios.get(`http://localhost:4000/api/convertWeight?ingredient=${ingredients[i].name}&amount=${ingredientAmounts[i]}`);
+        metricQuantities[i] = response.data
+      }
+      setMetricQuantities(metricQuantities);
+    };
+    fetchAndConvertIngredients();
+  }, []); 
+  
   // State to track checked ingredients
   const [checkedState, setCheckedState] = useState(
     new Array(ingredients.length).fill(false)
@@ -31,28 +46,12 @@ export function RecipeIngredients(props) {
     setCheckedState(new Array(ingredients.length).fill(false));
   };
 
-  const handleConvert = async (event) => {
-    event.preventDefault();
-    const newQuantity = [...ingredientAmounts];
-    const ingredientlist = [...ingredients];
-    console.log(ingredientlist);
-    const quantity = [...ingredientAmounts];
-    console.log(quantity);
-    try {
-      for (let i = 0; i < ingredientlist.length; i++) {
-        if (checkedState[i] === true) {
-          const response = await axios.get('http://localhost:4000/api/convertWeight?ingredient=' + ingredientlist[i].name + "&amount="  + quantity[i]);
-          console.log(response.data);
-          newQuantity[i] = response.data;
-        }
-      }
-      console.log(newQuantity);
-      setIngredientAmounts(newQuantity);
-      // reset the the checks
-      setCheckedState(new Array(ingredients.length).fill(false));
-      console.log('Ingredients converted successfully!');
-    } catch (error) {
-      console.error('Error:', error);
+  const handleUnitChange = (newUnitSystem) => {
+    setUnitSystem(newUnitSystem);
+    if (newUnitSystem === 'metric') {
+      setIngredientAmounts(metricQuantities);
+    } else {
+      setIngredientAmounts(imperialQuantities);
     }
   };
 
@@ -69,6 +68,7 @@ export function RecipeIngredients(props) {
 
       console.log('Ingredients added successfully!');
       console.log('Ingredients in shopping list:', response.data);
+      navigate('/shopping_list');
     } catch (error) {
       console.error('Error:', error);
     }
@@ -78,7 +78,23 @@ export function RecipeIngredients(props) {
     <Form onSubmit={handleSubmit} className="ingredient-form">
       <div className="recipe-detail-container">
         <div className="recipe-ingredients-container">
+          <div className='recipe-ingredients-header'>
           <p><h4>Ingredients</h4></p>
+            <ButtonGroup className="ingredient-conversion">
+              <Button variant="outline-*"
+                className={unitSystem === 'imperial' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
+                onClick={() => handleUnitChange('imperial')}
+              >
+                Imperial
+              </Button>
+              <Button variant="outline-*"
+                className={unitSystem === 'metric' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
+                onClick={() => handleUnitChange('metric')}
+              >
+                Metric
+              </Button>
+            </ButtonGroup>
+            </div>
           {ingredients.map((ingredient, index) => (
             <p><Form.Check
               type="checkbox"
@@ -99,9 +115,6 @@ export function RecipeIngredients(props) {
               Deselect all
             </Button>
             <div className="spacer"></div>
-            <Button variant="primary" onClick={handleConvert} className="ingredient-add-to-list">
-              Convert to Grams
-            </Button>
             <Button type="submit" variant="primary" className="ingredient-add-to-list">
               Add to Shopping List
             </Button>

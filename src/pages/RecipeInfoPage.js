@@ -1,4 +1,4 @@
-import '../App.css';
+import '../styles/App.css';
 import Navbar from '../containers/Navbar.js';
 import 'font-awesome/css/font-awesome.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
