@@ -1,3 +1,4 @@
+import '../styles/App.css';
 import React, { useState } from 'react';
 import CustomSearchBox from '../containers/CustomSearchBox';
 import Navbar from '../containers/Navbar.js';

@@ -3,7 +3,7 @@ import '../styles/DisplayRecipeList.css';
 import axios from 'axios';
 
 function DisplayRecipe(props) {
-  const [displayTitle, setDisplayTitle] = useState('Popular Recipe');
+  const [displayTitle, setDisplayTitle] = useState('Popular Recipes');
   const [recipeList, setRecipeList] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 

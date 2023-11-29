@@ -74,6 +74,25 @@ export function RecipeIngredients(props) {
     }
   };
 
+  const updateServingSize = (newSize) => {
+    if (newSize < 1) return; 
+  
+    setServingSize(newSize);
+  
+    const scaleFactor = newSize / defaultServingSize;
+    const newMetricQuantities = metricQuantities.map(qty => qty * scaleFactor);
+    const newImperialQuantities = imperialQuantities.map(qty => qty * scaleFactor);
+  
+    setMetricQuantities(newMetricQuantities);
+    setImperialQuantities(newImperialQuantities);
+  
+    if (unitSystem === 'metric') {
+      setIngredientAmounts(newMetricQuantities);
+    } else {
+      setIngredientAmounts(newImperialQuantities);
+    }
+  };
+
   return (
     <Form onSubmit={handleSubmit} className="ingredient-form">
       <div className="recipe-detail-container">

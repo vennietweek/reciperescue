@@ -2,7 +2,6 @@
 .custom-search-box {
   position: relative;
   display: inline-block;
-  font-family: "Trebuchet MS";
 }
 
 .add-ingredient-container {
@@ -15,7 +14,6 @@ input[type="text"], input[type="number"] {
   border: 1px solid #ccc;
   border-radius: 5px;
   outline: none;
-  font-family: "Trebuchet MS";
 }
 
 input::file-selector-button {
@@ -24,7 +22,6 @@ input::file-selector-button {
   border-radius: 20px;
   color: white;
   background-color: #324AB2;
-  font-family: "Trebuchet MS";
 }  
 
 .custom-dropdown {
@@ -40,7 +37,6 @@ input::file-selector-button {
   max-height: 100px;
   overflow: hidden; 
   white-space: nowrap; 
-  font-family: "Trebuchet MS";
   width: 100%;
 }
 
@@ -60,7 +56,6 @@ background-color: #324AB2;
 color: #fff;
 border: none;
 cursor: pointer;
-font-family: "Trebuchet MS";
 border-radius: 20px
 }
 
@@ -71,7 +66,6 @@ background-color: #324AB2;
 color: #fff;
 border: none;
 cursor: pointer;
-font-family: "Trebuchet MS";
 border-radius: 20px
 }
 
@@ -128,7 +122,6 @@ margin: 10px 10px;
 
 .name {
 font-weight: bold;
-font-family: "Trebuchet MS";
 }
 
 .quantity-container {

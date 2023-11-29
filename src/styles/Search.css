@@ -6,16 +6,17 @@
 
 .search h3 {
     text-align: left;
-    font-weight: bolder;
+    font-weight: 600;
+    font-size: 25px;
 }
 
 .search p {
     text-align: justify;
-    font-weight: bolder;
+    font-weight: 500;
+    font-size: 16px;
 }
 
 .search-container {
-    display: flex;
     align-items: center;
     width: 100%;
     margin: auto;
@@ -23,20 +24,23 @@
 }
 
 .search-bar {
-    flex-grow: 1;
-    outline: none;
+    padding-top: 10px;
+    display: flex;
+    width: 100%;
+    margin: auto;
 }
 
 .search-button {
     margin-left: 10px;
     margin-top: auto;
     margin-bottom: auto;
-    height: 55px;
+    height: 45px;
     color: white;
     background: #324AB2;
     border-radius: 5px;
     padding-left: 50px;
     padding-right: 50px;
+    font-weight: 600;
 }
 
 .search-icon {
@@ -45,33 +49,29 @@
 }
 
 .ingredient-container {
-    border: 2px solid #ccc;
-    border-radius: 2px;
     display: flex;
     flex-wrap: wrap;
     margin-top: 5px;
-    padding: 3px;
+    margin-left: -8px;
 }
 
 .ingredient-container input {
-    border: none;
+    border-color: white;
     width: fit-content;
-    padding: 5px 10px;
-    margin: 5px;
-}
-
-.ingredient-container input:focus {
-    outline: none;
 }
 
 .ingredient {
     background-color: transparent;
-    border: 2px solid #ccc;
+    border: 1.5px solid #ccc;
     color: #324AB2;
     padding: 5px 10px;
-    margin: 5px;
-    border-radius: 20px;
+    margin: 5px 0px 0px 8px;
+    border-radius: 5px;
     cursor: default;
+}
+
+.ingredient-input-field {
+    font-size: 15px;
 }
 
 .ingredient p {
