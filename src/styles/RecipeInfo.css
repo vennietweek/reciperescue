@@ -53,6 +53,13 @@ body {
 
 .recipe-ingredients-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.recipe-ingredient-converters {
+    display: flex;
+    align-items: center;
 }
 
 .custom-checkbox .form-check {
@@ -65,26 +72,13 @@ body {
     margin-top: 0;
 }
 
-.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #9d5ff3!important;
-    border-color: #9d5ff3!important;
-  }
-
-.ingredient-container-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px; 
-    padding-top: 8px;
-}
-
 .ingredient-select-all {
-    border-color: #9d5ff3; 
-    color: #9d5ff3;
+    border-color: var(--primary-color); 
+    color: var(--primary-color);
 }
 
 .ingredient-select-all:hover {
-    background-color: #9d5ff3; 
+    background-color: var(--secondary-color); 
 }
 
 .ingredient-deselect-all {
@@ -92,17 +86,16 @@ body {
 }
 
 .ingredient-add-to-list {
-    background-color: #9d5ff3; 
-    border-color: #9d5ff3;
+    background-color: var(--primary-color); 
+    border-color: var(--primary-color);
     margin-left: auto;
 }
 
 .ingredient-add-to-list:hover {
-    background-color: #9244ff; 
+    background-color: var(--secondary-color);; 
 }
 
 .ingredient-conversion {
-    margin-left: auto;
     height: 40px;
 }
 
@@ -118,6 +111,27 @@ body {
     border: 1px solid grey;
 }
 
+.ingredient-convert-button-active:hover {
+    border: 1px solid grey;
+}
+
+.ingredient-convert-button-inactive:hover {
+    border: 1px solid grey;
+}
+
+.ingredient-serving-size {
+    display: flex;
+    height: 40px;
+    max-width: 60px;
+    padding-right: 10px;
+    margin-right: 15px;
+}
+
+.ingredient-container-buttons {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
 /* Recipe Instructions */
 
 .recipe-instructions {
@@ -144,11 +158,11 @@ li {
 
 .btn-link {
     text-decoration: none; 
-    color: #9d5ff3;
+    color: var(--primary-color);
 }
 
 .btn-link:hover {
-color: #9244ff; 
+color: var(--secondary-color); 
 }
 
 @keyframes fadeIn {

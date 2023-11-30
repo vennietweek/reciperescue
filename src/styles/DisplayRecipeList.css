@@ -9,10 +9,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   align-items: start;
+  margin-right: -20px
 }
 
 .recipe {
-    padding: 10px 0px 10px 0px;
+    padding: 10px 20px 10px 0px;
     text-align: left;
   }
   

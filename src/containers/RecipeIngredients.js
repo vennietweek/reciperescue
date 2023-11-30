@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, ButtonGroup } from 'react-bootstrap';
+import { Form, Button, ButtonGroup, InputGroup, FormControl } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,7 +10,9 @@ export function RecipeIngredients(props) {
   const [ingredientAmounts, setIngredientAmounts] = useState(props.ingredientAmounts);
   const [unitSystem, setUnitSystem] = useState('imperial'); 
   const [metricQuantities, setMetricQuantities] = useState([...props.ingredientAmounts]);
-  const [imperialQuantities] = useState([...props.ingredientAmounts]);
+  const [imperialQuantities, setImperialQuantities] = useState([...props.ingredientAmounts]);
+  const [servingSize, setServingSize] = useState('4');
+  console.log(servingSize)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,17 +57,16 @@ export function RecipeIngredients(props) {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleAddToShoppingList = async () => {
     const dbingredient = ingredients.filter((_, index) => checkedState[index]).map((ingredient) => ingredient.name);
     const quantity = ingredientAmounts.filter((_, index) => checkedState[index]);
     const input = { dbingredient, quantity };
     try {
       const response = await axios.post('http://localhost:4000/api/ingredients', input);
-
-      // reset the the checks
+  
+      // reset the checks
       setCheckedState(new Array(ingredients.length).fill(false));
-
+  
       console.log('Ingredients added successfully!');
       console.log('Ingredients in shopping list:', response.data);
       navigate('/shopping_list');
@@ -73,13 +74,14 @@ export function RecipeIngredients(props) {
       console.error('Error:', error);
     }
   };
+  
 
   const updateServingSize = (newSize) => {
     if (newSize < 1) return; 
   
     setServingSize(newSize);
   
-    const scaleFactor = newSize / defaultServingSize;
+    const scaleFactor = newSize / servingSize;
     const newMetricQuantities = metricQuantities.map(qty => qty * scaleFactor);
     const newImperialQuantities = imperialQuantities.map(qty => qty * scaleFactor);
   
@@ -94,26 +96,32 @@ export function RecipeIngredients(props) {
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="ingredient-form">
       <div className="recipe-detail-container">
         <div className="recipe-ingredients-container">
           <div className='recipe-ingredients-header'>
-          <p><h4>Ingredients</h4></p>
-            <ButtonGroup className="ingredient-conversion">
-              <Button variant="outline-*"
-                className={unitSystem === 'imperial' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
-                onClick={() => handleUnitChange('imperial')}
-              >
-                Imperial
-              </Button>
-              <Button variant="outline-*"
-                className={unitSystem === 'metric' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
-                onClick={() => handleUnitChange('metric')}
-              >
-                Metric
-              </Button>
-            </ButtonGroup>
+            <p><h4>Ingredients</h4></p>
+            <div className="recipe-ingredient-converters">
+              <FormControl className="ingredient-serving-size"
+                type="number"
+                value={servingSize}
+                onChange={(e) => updateServingSize(Number(e.target.value))}
+              />
+              <ButtonGroup className="ingredient-conversion">
+                <Button variant="outline-*"
+                  className={unitSystem === 'imperial' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
+                  onClick={() => handleUnitChange('imperial')}
+                >
+                  Imperial
+                </Button>
+                <Button variant="outline-*"
+                  className={unitSystem === 'metric' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
+                  onClick={() => handleUnitChange('metric')}
+                >
+                  Metric
+                </Button>
+              </ButtonGroup>
             </div>
+          </div>
           {ingredients.map((ingredient, index) => (
             <p><Form.Check
               type="checkbox"
@@ -134,12 +142,11 @@ export function RecipeIngredients(props) {
               Deselect all
             </Button>
             <div className="spacer"></div>
-            <Button type="submit" variant="primary" className="ingredient-add-to-list">
+            <Button type="button" className="ingredient-add-to-list" onClick={handleAddToShoppingList} disabled={!checkedState.some(checked => checked)}>
               Add to Shopping List
             </Button>
           </div>
         </div>
       </div>
-    </Form>
   );
 }

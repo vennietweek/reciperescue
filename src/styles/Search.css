@@ -36,11 +36,15 @@
     margin-bottom: auto;
     height: 45px;
     color: white;
-    background: #324AB2;
+    background: var(--primary-color);
     border-radius: 5px;
     padding-left: 50px;
     padding-right: 50px;
     font-weight: 600;
+}
+
+.search-button:hover {
+    background: var(--secondary-color);
 }
 
 .search-icon {
@@ -62,8 +66,8 @@
 
 .ingredient {
     background-color: transparent;
-    border: 1.5px solid #ccc;
-    color: #324AB2;
+    border: 1.5px solid var(--primary-color);
+    color: var(--primary-color);
     padding: 5px 10px;
     margin: 5px 0px 0px 8px;
     border-radius: 5px;
