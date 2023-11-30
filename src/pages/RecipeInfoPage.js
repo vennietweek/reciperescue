@@ -76,7 +76,7 @@ export function RecipeInfoPage (){
             <RecipeInstructions instructions={recipe.instructions} />
         </div>) : (
         <div className='recipe-information-page d-flex justify-content-center align-items-center' style={{ height: '100vh' }}>
-          <FontAwesomeIcon icon={faSpinner} spin size="2xl" style={{color: "#6f66f0",}} />
+          <FontAwesomeIcon icon={faSpinner} spin size="2xl" style={{color: "#0D6EFD"}} />
         </div>
       )}
         </>

@@ -514,7 +514,7 @@ function CustomSearchBox() {
           <button className="x-button" onClick={closeModal} style={{ float: 'right' }}>X</button>
           <h2>Price Information:</h2>
           {modalContent === 'loading' ? (
-            <center><FontAwesomeIcon icon={faSpinner} spin size="3x" style={{ color: '#6f66f0' }} /></center>
+            <center><FontAwesomeIcon icon={faSpinner} spin size="3x" style={{ color: '#0D6EFD' }} /></center>
           ) : (
             <div>{modalContent}</div>
           )}

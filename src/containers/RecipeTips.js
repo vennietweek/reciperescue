@@ -65,9 +65,9 @@ export function RecipeTips(props) {
         <h4>Recipe Tips</h4>
         {isLoading ? (
           <div className="loading-container">
-            <FontAwesomeIcon icon={faSpinner} spin size="xl" style={{color: "#6f66f0",}} />
+            <FontAwesomeIcon icon={faSpinner} spin size="xl" style={{color: "#0D6EFD",}} />
             <br /><br />
-            <p className='chatgpt-credit'>Powered by ChatGPT</p>
+            <p className='chatgpt-credit'>Loading tips from ChatGPT</p>
           </div>
         ) : (
           <>
