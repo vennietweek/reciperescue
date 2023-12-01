@@ -72,7 +72,7 @@ export function RecipeInfoPage (){
             <RecipeInfo recipe={recipe} />
             <RecipeNutrition recipe={recipe} />
             <RecipeTips recipe={recipe} />
-            <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} />
+            <RecipeIngredients ingredients={recipe.ingredients} ingredientAmounts={recipe.ingredientAmounts} servingSize={recipe.servingSize}/>
             <RecipeInstructions instructions={recipe.instructions} />
         </div>) : (
         <div className='recipe-information-page d-flex justify-content-center align-items-center' style={{ height: '100vh' }}>
