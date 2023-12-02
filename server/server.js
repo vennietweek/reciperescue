@@ -356,20 +356,27 @@ app.get('/api/convertWeight', async (req, res) => {
     const ingredient = req.query.ingredient;
     const amount = req.query.amount.split(' ');
     const sourceUnit = amount[1];
-    const quantity = parseFloat(amount[0]);
-    //Check if we already have the conversion in the database, if so retrieve from database
-    const check = await ingredWeight.findOne({ ingredientName: ingredient, sourceUnit: sourceUnit });
-    if (check) { 
-      const newAmount = quantity * check.amountInGram;
-      res.json( newAmount.toFixed(1) + ' ' + 'grams' );
-    } else {
-      // Call API to convert the units of ingredient to grams
-      const apiResponse = await axios.get('https://api.spoonacular.com/recipes/convert?ingredientName=' + ingredient + '&sourceAmount=' + quantity.toString() + '&sourceUnit=' + sourceUnit + '&targetUnit=grams&' + spoonacularKey);
-      const data = apiResponse.data;
-      // Cache the conversion in the database
-      const newIngredWeight = new ingredWeight({ ingredientName: ingredient, sourceUnit: sourceUnit, amountInGram: parseFloat((data.targetAmount / quantity).toFixed(1)) });
-      await newIngredWeight.save();
-      res.json( data.targetAmount.toString() + ' ' + 'grams' );
+    // Check for error in conversion
+    if (sourceUnit == 'serving') {
+      // if error, return 0 grams
+      res.json( 0 + ' ' + 'grams' );
+    }
+    else {
+      const quantity = parseFloat(amount[0]);
+      //Check if we already have the conversion in the database, if so retrieve from database
+      const check = await ingredWeight.findOne({ ingredientName: ingredient, sourceUnit: sourceUnit });
+      if (check) { 
+        const newAmount = quantity * check.amountInGram;
+        res.json( newAmount.toFixed(1) + ' ' + 'grams' );
+      } else {
+        // Call API to convert the units of ingredient to grams
+        const apiResponse = await axios.get('https://api.spoonacular.com/recipes/convert?ingredientName=' + ingredient + '&sourceAmount=' + quantity.toString() + '&sourceUnit=' + sourceUnit + '&targetUnit=grams&' + spoonacularKey);
+        const data = apiResponse.data;
+        // Cache the conversion in the database
+        const newIngredWeight = new ingredWeight({ ingredientName: ingredient, sourceUnit: sourceUnit, amountInGram: parseFloat((data.targetAmount / quantity).toFixed(1)) });
+        await newIngredWeight.save();
+        res.json( data.targetAmount.toString() + ' ' + 'grams' );
+      }
     }
   } catch (error) {
     console.error(error);
