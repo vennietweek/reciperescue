@@ -127,12 +127,18 @@ app.post('/api/ingredients', async (req, res) => {
 
 //api for user to add ingredients manually in shopping list 
 app.post('/api/add-ingredient', async (req, res) => {
-  const { dbingredient, quantity, measurement, price } = req.body;
-  const newItem = new Item({ dbingredient: dbingredient, price: price, quantity: quantity, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png', measurement: measurement });
+  const { dbingredient, quantity, measurement, price, image } = req.body;
+  const newItem = new Item({
+  dbingredient: dbingredient,
+  price: price,
+  quantity: quantity,
+  image: image === '' ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png' : image,
+  measurement: measurement
+});
+
   await newItem.save();
-  //retrieve all ingredients 
   const items = await Item.find();
-  //send list of ingredients back to database
+
   res.json(items);
 });
 

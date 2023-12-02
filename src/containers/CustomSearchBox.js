@@ -6,28 +6,32 @@ import { v4 as uuidv4 } from 'uuid';
 import Modal from 'react-modal';
 import '../styles/CustomSearchBox.css'
 
+var openModalId = ''
+
 function CustomSearchBox() {
   const [dbingredients, setDBIngredients] = useState([]);
-  var openModalId = ''
+  
   useEffect(() => { //setting up a "database" of ingredients
     setDBIngredients([
       {
         dbingredient: 'Apple',
-        price: '1.99',
-        quantity: '10',
         image: 'https://images.all-free-download.com/images/graphiclarge/camera_test_apple_560282.jpg',
       },
       {
         dbingredient: 'Orange',
-        price: '0.99',
-        quantity: '15',
         image: 'https://images.all-free-download.com/images/graphiclarge/orange_backdrop_fruit_juice_petal_decor_6931338.jpg',
       },
       {
         dbingredient: 'Banana',
-        price: '0.49',
-        quantity: '20',
         image: 'https://image.shutterstock.com/image-photo/stock-vector-whole-banana-with-half-slices-and-leaves-isolated-on-white-background-vector-illustration-450w-286161728.jpg',
+      },
+      {
+        dbingredient: 'Mango',
+        image: 'https://www.stockvault.net//data/2011/03/20/119586/thumb16.jpg',
+      },
+      {
+        dbingredient: 'Pear',
+        image: 'https://thumbs.dreamstime.com/b/red-yellow-pear-fruit-leaf-isolated-white-clipping-path-78863322.jpg',
       },
     ]);
   }, []);
@@ -45,9 +49,8 @@ function CustomSearchBox() {
           ingredient: item.dbingredient,
           price: item.price === "" ? null : item.price,
           quantity: parseInt(item.quantity, 10) || 0, 
-          imageLink: item.image,
+          image: item.image,
           measurement: item.measurement ? "(" + item.measurement + ")" : "",
-          imageUploaded: null, 
           id: item._id,
         }));
 
@@ -91,8 +94,8 @@ function CustomSearchBox() {
     const query = e.target.value;
     setUserInput(query);
     const filtered = dbingredients.filter(item => item['dbingredient'].toLowerCase().includes(query.toLowerCase()));
-    const filteredIngredients = filtered.map(item => item['dbingredient']);
-    setFilteredIngredients([query, ...filteredIngredients.slice(0, 5)]); //dropdown suggestion for 'add ingredients search bar' to suggest ingredients in "database"
+    const q = {'dbingredient': query, 'image': ''}
+    setFilteredIngredients([q, ...filtered.slice(0, 5)]); //dropdown suggestion for 'add ingredients search bar' to suggest ingredients in "database"
   };
 
   const handleItemClick = (ingredient) => { //handling selected ingredient
@@ -105,8 +108,7 @@ function CustomSearchBox() {
     e.preventDefault();
     const price = e.target.price.value; //user input of ingredient price
     const quantity = Number(e.target.quantity.value); //user input of ingredient quantity
-    const imageUploaded = null; //user input of ingredient image
-    const imageLink = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png';
+    const image = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png';
     const measurement = e.target.measurement.value;
     const id = uuidv4(); //generated id for user input of ingredient
 
@@ -116,10 +118,11 @@ function CustomSearchBox() {
     }
 
     const input = {
-      dbingredient: selectedIngredient,
+      dbingredient: selectedIngredient.dbingredient,
       quantity: quantity,
       measurement: measurement,
       price: price,
+      image: selectedIngredient.image,
     };
 
     try {
@@ -141,9 +144,8 @@ function CustomSearchBox() {
         ingredient: item.dbingredient,
         price: item.price === "" ? null : item.price,
         quantity: parseInt(item.quantity, 10) || 0, 
-        imageLink: item.image,
+        image: item.image,
         measurement: item.measurement ? "(" + item.measurement + ")" : "",
-        imageUploaded: null, 
         id: item._id,
       }));
 
@@ -311,7 +313,7 @@ function CustomSearchBox() {
     }
     setListings((ogListings) =>
       ogListings.map((listing) =>
-        listing.id === id ? { ...listing, ingredient: name, price: price, imageLink: image, measurement: listingMeasurement, quantity: qty } : listing
+        listing.id === id ? { ...listing, ingredient: name, price: price, image: image, measurement: listingMeasurement, quantity: qty } : listing
       )
     );
 
@@ -336,7 +338,6 @@ function CustomSearchBox() {
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
-
       const data = await response.json();
       if (data.length > 0) {
         const items = data.map(item => (
@@ -351,9 +352,10 @@ function CustomSearchBox() {
             </td>
           </tr>
         ));
+        
         if (openModalId === modalId) {
           setModalContent(
-            <table>
+            <table width="100%">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -398,7 +400,7 @@ function CustomSearchBox() {
             <ul className="custom-dropdown" ref={dropDownRef}>
               {filteredIngredients.map((ingredient, index) => (
                 <li key={index} onClick={() => handleItemClick(ingredient)}>
-                  {ingredient}
+                  {ingredient.dbingredient}
                 </li>
               ))}
             </ul>
@@ -408,7 +410,7 @@ function CustomSearchBox() {
       <div>
         {showForm && selectedIngredient && ( //accept user input of details of selected ingredient
           <div className="custom-form">
-            <h3>{selectedIngredient}</h3>
+            <h3>{selectedIngredient.dbingredient}</h3>
             <form onSubmit={handleFormSubmit}>
               <div className="form-group">
                 <label htmlFor="price">Price (Optional)</label>
@@ -437,11 +439,7 @@ function CustomSearchBox() {
         {listings.map((listing, index) => (
           <div key={index} className="list-listing">
             <div className="column image-container">
-              {listing.imageUploaded === null ? (
-                <img src={listing.imageLink} alt={listing.ingredient} />
-              ) : (
-                <img src={URL.createObjectURL(listing.imageUploaded)} alt={listing.ingredient} />
-              )}
+              <img src={listing.image} alt={listing.ingredient} />
             </div>
             <div className="column listing-details">
               <div className="name" style={{ textAlign: 'left' }}>{listing.ingredient} {listing.measurement}</div>
