@@ -21,8 +21,10 @@ We are still in the process of refining our designs and choosing between possibl
 
 # Backend Features
 
-1. Call upon 4 different APIs for (1) Getting a list of recipe, (2) Getting the details within a specific recipe, (3) Calling ChatGPT to request for tips on recipe, (4) Calling an api to convert the ingredients into grams
+1. Call upon 4 different external APIs for (1) Getting a list of recipe, (2) Getting the details within a specific recipe, (3) Calling ChatGPT to request for tips on recipe, (4) Calling an api to convert the ingredients into grams
 
 2. Scrap the Fairprice Website to obtain list of items available for specific ingredients
 
 3. Caching of data called by both APIs and scraper into our database so that it will reduce loading time for repeated loading of similar data
+
+4. Database to (i) save ingredients in recipe so that it could be pulled for display in shopping list (ii) save manually added ingredients to shopping list
