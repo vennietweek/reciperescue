@@ -7,6 +7,7 @@ const { OpenAI } = require('openai');
 const puppeteer = require('puppeteer');
 require('dotenv').config();
 
+// load the api keys from the .env file
 const spoonacularKey = "apiKey=" + process.env.spoonacularKey;
 const spoonacularKey2 = "apiKey=" + process.env.spoonacularKey2;
 const app = express();
@@ -15,6 +16,8 @@ mongoose.connect('mongodb://localhost:27017/mydatabase', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+// Setup the various schemas for the database
 
 const recipeBasicSchema = new mongoose.Schema({
   id: String,
@@ -404,16 +407,25 @@ app.get('/api/getTips', async (req, res) => {
 });
 
 const scrape = async (searchTerm) => {
-  // Start a Puppeteer session with:
-  // - a visible browser (`headless: false` - easier to debug because you'll see the browser in action)
-  // - no default viewport (`defaultViewport: null` - website page will in full width and height)
+  // Start a Puppeteer session with no browser
   const browser = await puppeteer.launch({
     headless: true,
   });
   const page = await browser.newPage();
+
+  // Go to the Fairprice website and wait until loaded
   await page.goto("https://www.fairprice.com.sg/search?query=" + searchTerm, {
-    waitUntil: "domcontentloaded",
+    waitUntil: "load",
   });
+
+  // Scroll the page and wait to ensure that we can load 10 items from the page
+  for(let i = 0; i < 5; i++) {
+    await page.evaluate(() => {
+        window.scrollBy(0, window.innerHeight);
+    });
+    page.waitForTimeout(1000);
+  }
+
   // Get page data
   const products = await page.evaluate(() => {
     const productSection = document.querySelector(".productCollection");
@@ -426,10 +438,10 @@ const scrape = async (searchTerm) => {
     const productPrice = Array.from(productPriceList).map((elem) => { return elem.innerText; });
     const productAmtList = productSection.querySelectorAll('.cURkuH');
     const productAmt = Array.from(productAmtList).map((elem) => { return elem.innerText; });
-    const productImgList = productSection.querySelectorAll('img');
-    const productImg = Array.from(productImgList).map((elem) => { return elem.src; });
-    const linkElements = productSection.querySelectorAll("a")
-    const link = Array.from(linkElements).map((elem) => { return elem.href })
+    const productImgList = productSection.getElementsByTagName('img');
+    const productImg = Array.from(productImgList).map((elem) => { return elem.getAttribute("src") ; });
+    const linkElements = productSection.getElementsByTagName("a")
+    const link = Array.from(linkElements).map((elem) => { return elem.getAttribute("href") ; })
     let results = [];
     for (i = 0; i < (productName.length >= 10 ? 10 : productName.length); i++) { //adjust the max i value to limit the number of results returned
       results.push({
