@@ -31,7 +31,7 @@ function CustomSearchBox() {
       },
     ]);
   }, []);
-  useEffect(() => {
+  useEffect(() => { //get the ingredients from mongoDB to display
     const fetchData = async () => {
       try {
         const response = await fetch('http://localhost:4000/api/ingredients');
@@ -40,18 +40,18 @@ function CustomSearchBox() {
         }
         const data = await response.json();
 
-        // Map the API response to the format used in your setListings state
+        //map the api response to the format used in listings state
         const mappedData = data.map((item) => ({
           ingredient: item.dbingredient,
           price: item.price === "" ? null : item.price,
-          quantity: parseInt(item.quantity, 10) || 0, // Assuming quantity is a number
+          quantity: parseInt(item.quantity, 10) || 0, 
           imageLink: item.image,
           measurement: item.measurement ? "(" + item.measurement + ")" : "",
-          imageUploaded: null, // Assuming you want to initialize this to null
+          imageUploaded: null, 
           id: item._id,
         }));
 
-        setListings(mappedData);
+        setListings(mappedData); //set mappedData (ingredients that were saved in mongoDB) using setListings 
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -105,32 +105,15 @@ function CustomSearchBox() {
     e.preventDefault();
     const price = e.target.price.value; //user input of ingredient price
     const quantity = Number(e.target.quantity.value); //user input of ingredient quantity
-    // const imageUploaded = e.target.image.files[0]; //user input of ingredient image
     const imageUploaded = null; //user input of ingredient image
     const imageLink = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png';
     const measurement = e.target.measurement.value;
     const id = uuidv4(); //generated id for user input of ingredient
-    // if (!imageUploaded) { //handling error for no image uploaded
-    //   alert('Please select an image.');
-    //   return;
-    // }
-    // if (!price) { //handling error for no price uploaded
-    //   alert('Please enter price.');
-    //   return;
-    // }
+
     if (!quantity) { //handling error for no quantity uploaded
       alert('Please enter quantity.');
       return;
     }
-    const newListing = {  //creation of a new listing
-      ingredient: selectedIngredient,
-      price,
-      quantity,
-      imageUploaded,
-      imageLink,
-      measurement: "(" + measurement + ")",
-      id,
-    };
 
     const input = {
       dbingredient: selectedIngredient,
@@ -140,7 +123,7 @@ function CustomSearchBox() {
     };
 
     try {
-      const response = await fetch('http://localhost:4000/api/add-ingredient', {
+      const response = await fetch('http://localhost:4000/api/add-ingredient', { //post new manually added ingredient to mongoDB
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,27 +136,23 @@ function CustomSearchBox() {
       }
 
       const data = await response.json();
-      console.log('Success:', data);
-      // Handle the response data as needed
-      // Map the API response to the format used in your setListings state
-      const mappedData = data.map((item) => ({
+      //map the api response to the format used in your listings state to update listings such that front end is updated
+      const mappedData = data.map((item) => ({ 
         ingredient: item.dbingredient,
         price: item.price === "" ? null : item.price,
-        quantity: parseInt(item.quantity, 10) || 0, // Assuming quantity is a number
+        quantity: parseInt(item.quantity, 10) || 0, 
         imageLink: item.image,
         measurement: item.measurement ? "(" + item.measurement + ")" : "",
-        imageUploaded: null, // Assuming you want to initialize this to null
+        imageUploaded: null, 
         id: item._id,
       }));
 
-      setListings(mappedData);
+      setListings(mappedData); //handle errors
     } catch (error) {
       console.error('Error:', error);
-      // Handle errors
     }
 
 
-    // setListings([...listings, newListing]);
     setShowForm(false);
   };
 
@@ -183,13 +162,12 @@ function CustomSearchBox() {
 
   const deleteIngredient = async (id) => { //handling delete ingredients by id
     try {
-      // Make API request to delete ingredient by id
+      //make api request to delete ingredient by id
       await fetch(`http://localhost:4000/api/del-ingredients/${id}`, {
         method: 'DELETE',
-        // Additional headers or authentication tokens if needed
       });
 
-      // Update the state after successful deletion
+      //update the listings state after successful deletion
       const newListings = listings.filter((listing) => listing.id !== id);
       setListings(newListings);
     } catch (error) {
@@ -199,10 +177,9 @@ function CustomSearchBox() {
 
   const decreaseQuantity = async (id) => {
     try {
-      // Make API request to decrease quantity of ingredient by id
+      //make api request to decrease quantity of ingredient by id
       const response = await fetch(`http://localhost:4000/api/decrease-quantity/${id}`, {
-        method: 'PUT', // Use PUT for updating resources
-        // Additional headers or authentication tokens if needed
+        method: 'PUT', //use PUT for updating resources
       });
 
       if (!response.ok) {
@@ -210,8 +187,7 @@ function CustomSearchBox() {
         throw new Error(`Failed to decrease quantity: ${errorMessage}`);
       }
 
-      // Assuming you have a state variable named 'listings' and a setter 'setListings'
-      // Update the state after successful decrease in quantity
+      //update the listings state after successful decrease in quantity
       setListings((ogListings) =>
         ogListings.map((listing) =>
           listing.id === id ? { ...listing, quantity: Math.max(1, listing.quantity - 1) } : listing
@@ -224,10 +200,9 @@ function CustomSearchBox() {
 
   const increaseQuantity = async (id) => {
     try {
-      // Make API request to increase quantity of ingredient by id
+      //make api request to increase quantity of ingredient by id
       const response = await fetch(`http://localhost:4000/api/increase-quantity/${id}`, {
-        method: 'PUT', // Use PUT for updating resources
-        // Additional headers or authentication tokens if needed
+        method: 'PUT', // use PUT for updating resources
       });
 
       if (!response.ok) {
@@ -235,8 +210,7 @@ function CustomSearchBox() {
         throw new Error(`Failed to increase quantity: ${errorMessage}`);
       }
 
-      // Assuming you have a state variable named 'listings' and a setter 'setListings'
-      // Update the state after successful increase in quantity
+      //update the listings state after successful increase in quantity
       setListings((ogListings) =>
         ogListings.map((listing) =>
           listing.id === id ? { ...listing, quantity: Math.min(999, listing.quantity + 1) } : listing
@@ -249,10 +223,9 @@ function CustomSearchBox() {
 
   const clearListings = async () => {
     try {
-      // Make API request to clear all ingredients
+      //make api request to clear all ingredients
       const response = await fetch('http://localhost:4000/api/clear-ingredients', {
         method: 'DELETE',
-        // Additional headers or authentication tokens if needed
       });
 
       if (!response.ok) {
@@ -260,7 +233,7 @@ function CustomSearchBox() {
         throw new Error(`Failed to clear ingredients: ${errorMessage}`);
       }
 
-      // Update the state after successful clearing
+      //update the state after successful clearing
       setListings([]);
     } catch (error) {
       console.error('Error clearing ingredients:', error);
@@ -273,16 +246,19 @@ function CustomSearchBox() {
   const [modalContent, setModalContent] = useState('');
   const [selectedPrice, setSelectedPrice] = useState(null);
 
+  //open modal for user to select item when user clicks on 'check price'
   const openModal = (items) => {
     setModalContent(items);
     setIsModalOpen(true);
   };
 
+  //close modal
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedPrice(null);
   };
 
+  //modal display for user to adjust quantities after selecting Fairprice ingredient using 'check price'
   const handleSelectPrice = async (id, name, listingqty, price, image, original_name, measurement, qty) => {
     var new_qty = 1
     setModalContent(
@@ -324,6 +300,7 @@ function CustomSearchBox() {
     )
   }
 
+  //update listings and save front end copy
   const handleSave = async (id, name, price, image, listingqty, qty) => {
     closeModal();
 
@@ -338,6 +315,7 @@ function CustomSearchBox() {
       )
     );
 
+    //update mongoDB
     const response = await fetch(`http://localhost:4000/api/update-ingredient/${id}`, {
       method: 'PUT',
       headers: {
@@ -346,11 +324,11 @@ function CustomSearchBox() {
       body: JSON.stringify({ name, price, listingqty, qty, image }),
     });
 
-    // setSelectedPrice(price);
   };
 
+  //display modal when 'check price' button is clicked
   const checkPrice = async (listingId, listingIngredient, listingMeasurement, listingQuantity) => {
-    const modalId = uuidv4(); // Generate a new UUID for each modal instance
+    const modalId = uuidv4(); //generate a new UUID for each modal instance
     openModalId = modalId
     try {
       openModal('loading')
@@ -393,13 +371,13 @@ function CustomSearchBox() {
 
       } else {
         if (openModalId === modalId) {
-          setModalContent('No prices found for the specified ingredient.');
+          setModalContent('No prices found for the specified ingredient.'); //ingredient cannot be found by scraping Fairprice web
         }
       }
     } catch (error) {
       console.error('Error fetching data:', error);
       if (openModalId === modalId) {
-        setModalContent('An error occurred while fetching prices.');
+        setModalContent('An error occurred while fetching prices.'); //handle error
       }
     }
   };
@@ -447,11 +425,6 @@ function CustomSearchBox() {
                 <input type="number" name="quantity" id="quantity" required />
               </div>
 
-              {/* <div className="form-group">
-                <label htmlFor="image">Image (Optional)</label>
-                <input type="file" name="image" id="image" accept="image/*" />
-              </div> */}
-
               <button className="submit-button" type="submit">Submit</button>
             </form>
           </div>
@@ -478,7 +451,6 @@ function CustomSearchBox() {
                     ${listing.price}
                   </div>
                 ) : (
-                  // <button className="check-price-button" onClick={() => alert(listing.ingredient)}>Check Price</button>
                   <button className="check-price-button" onClick={() => checkPrice(listing.id, listing.ingredient, listing.measurement, listing.quantity)}>Check Price</button>
                 )}
               </div>
@@ -505,7 +477,7 @@ function CustomSearchBox() {
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
           },
           content: {
-            width: '70%', // Increase the width for the table
+            width: '70%', 
             margin: 'auto',
           },
         }}
@@ -524,7 +496,6 @@ function CustomSearchBox() {
       {selectedPrice && (
         <div>
           <p>Selected Price: {selectedPrice}</p>
-          {/* Render other components or perform actions with the selected price */}
         </div>
       )}
     </div>

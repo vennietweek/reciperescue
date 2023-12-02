@@ -102,10 +102,11 @@ app.use(cors());
 
 app.use(express.json());
 
-app.post('/api/ingredients', async (req, res) => {
+//api to save ingredients (added from recipe) in the database
+app.post('/api/ingredients', async (req, res) => { 
   const { dbingredient, quantity } = req.body;
-  for (let i = 0; i < dbingredient.length; i++) {
-    const amount = Math.ceil(quantity[i].split(' ')[0]);
+  for (let i = 0; i < dbingredient.length; i++) { 
+    const amount = Math.ceil(quantity[i].split(' ')[0]); 
     const measurement = quantity[i].split(' ')[1] ? quantity[i].split(' ')[1] : '';
     const existing = await Item.findOne({ dbingredient: dbingredient[i], measurement: measurement });
     if (existing) {
@@ -124,20 +125,24 @@ app.post('/api/ingredients', async (req, res) => {
   res.json(items);
 });
 
+//api for user to add ingredients manually in shopping list 
 app.post('/api/add-ingredient', async (req, res) => {
   const { dbingredient, quantity, measurement, price } = req.body;
   const newItem = new Item({ dbingredient: dbingredient, price: price, quantity: quantity, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Icon-round-Question_mark.svg/1200px-Icon-round-Question_mark.svg.png', measurement: measurement });
   await newItem.save();
+  //retrieve all ingredients 
   const items = await Item.find();
-
+  //send list of ingredients back to database
   res.json(items);
 });
 
+//api to get all ingredients from database so that the saved ingredients are displayed in shopping list
 app.get('/api/ingredients', async (req, res) => {
   const items = await Item.find();
   res.json(items);
 });
 
+//api to update changes made in modal of the shopping list
 app.put('/api/update-ingredient/:id', async (req, res) => {
   const itemId = req.params.id;
   const { name, price, listingqty, qty, image } = req.body;
@@ -152,6 +157,7 @@ app.put('/api/update-ingredient/:id', async (req, res) => {
   }
 });
 
+//api to increase the quantity of ingredient in shopping list using '+' button
 app.put('/api/increase-quantity/:id', async (req, res) => {
   const itemId = req.params.id;
   try {
@@ -172,6 +178,7 @@ app.put('/api/increase-quantity/:id', async (req, res) => {
   }
 });
 
+//api to decreate the quantity of inredient in shopping list using '-' button
 app.put('/api/decrease-quantity/:id', async (req, res) => { 
   const itemId = req.params.id; 
   try { 
@@ -192,6 +199,7 @@ app.put('/api/decrease-quantity/:id', async (req, res) => {
   } 
 }); 
 
+//delete ingredient from shopping list by ID using the trash button
 app.delete('/api/del-ingredients/:id', async (req, res) => { 
   const itemId = req.params.id; 
   try { 
@@ -208,6 +216,7 @@ app.delete('/api/del-ingredients/:id', async (req, res) => {
   } 
 }); 
 
+//delete ingredients from shopping list by using 'clear list' button
 app.delete('/api/clear-ingredients', async (req, res) => { 
   try { 
     // Remove all items from the database 
