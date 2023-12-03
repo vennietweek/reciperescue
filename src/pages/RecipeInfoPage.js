@@ -47,7 +47,10 @@ export function RecipeInfoPage() {
         return (
             <>
             <Navbar />
-            <div className='recipe-not-found'><p>Recipe not found.</p></div>
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+                <h1>Recipe not found</h1>
+                <p>Oops! We can't find the recipe you're looking for.</p>
+            </div>
             </>
         );
     }
