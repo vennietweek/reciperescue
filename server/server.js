@@ -8,7 +8,7 @@ const puppeteer = require('puppeteer');
 require('dotenv').config();
 
 // load the api keys from the .env file
-const spoonacularKey = "apiKey=" + process.env.spoonacularKey;
+const spoonacularKey = "apiKey=" + process.env.spoonacularKey3;
 const spoonacularKey2 = "apiKey=" + process.env.spoonacularKey2;
 const app = express();
 
@@ -459,10 +459,10 @@ const scrape = async (searchTerm) => {
   // Get page data
   const products = await page.evaluate(() => {
     const productSection = document.querySelector(".productCollection");
-    const productNameList = productSection.querySelectorAll('.ctPXx');
-    if (productNameList.length == 0) {
+    if (productSection == null) {
       return [];
     }
+    const productNameList = productSection.querySelectorAll('.ctPXx');
     const productName = Array.from(productNameList).map((elem) => { return elem.innerText; });
     const productPriceList = productSection.querySelectorAll('.cXCGWM');
     const productPrice = Array.from(productPriceList).map((elem) => { return elem.innerText; });

@@ -10,6 +10,7 @@ import Chip from '@mui/material-next/Chip';
 // Recipe Information Container
 export function RecipeInfo (props) {
   const { recipe } = props; 
+  console.log(recipe);
   return (
     <>
     <div className='recipe-image-container'>
@@ -24,16 +25,16 @@ export function RecipeInfo (props) {
       <span><FontAwesomeIcon icon={faConciergeBell} style={{color: "grey", fontSize:"20px"}} />&nbsp;&nbsp;Serves {recipe.servingSize} </span>
       <br/>
       <div className="tag-group">
-      {recipe.isVegetarian === true && (
+      {recipe.isVegetarian === "true" && (
         <><Chip color="tertiary" disabled={false} size="medium" label="Vegetarian" /></>
       )}
-      {recipe.isVegan === true && (
+      {recipe.isVegan === "true" && (
         <><Chip color="success" disabled={false} size="medium" label="Vegan" /></>
       )}
-      {recipe.isDairyFree === true && (
+      {recipe.isDairyFree === "true" && (
         <><Chip color="warning" disabled={false} size="medium" label="Dairy Free" /></>
       )}
-      {recipe.isGlutenFree === true && (
+      {recipe.isGlutenFree === "true" && (
         <><Chip color="primary" disabled={false} size="medium" label="Gluten Free" /></>
       )}
     </div>
