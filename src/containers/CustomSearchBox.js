@@ -482,6 +482,7 @@ function CustomSearchBox() {
           },
           content: {
             width: '70%', 
+            height: '60%',
             margin: 'auto',
           },
         }}
