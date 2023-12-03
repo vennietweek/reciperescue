@@ -5,6 +5,7 @@ import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
+// Sample tips in case ChatGPT is down
 const sampleTips = [
   "Use guanciale for authentic flavor.",
   "Cook pasta al dente for the perfect texture.",
@@ -18,6 +19,7 @@ const sampleTips = [
   "Finish with freshly cracked black pepper for aroma."
 ];
 
+// Recipe Tips Container
 export function RecipeTips(props) {
 
     const [recipe] = useState(props.recipe);
@@ -32,6 +34,7 @@ export function RecipeTips(props) {
       }
     }, [recipe]); 
     
+    // Get tips API call
     const getTips = async () => {
       setIsLoading(true);
       try {
@@ -48,12 +51,14 @@ export function RecipeTips(props) {
       }
     };
 
+    // Handle navigation to the next two tips
     const handleMoreTips = () => {
       const newIndex = tipIndex + 2 < tips.length ? tipIndex + 2 : 0;
       setVisibleTips(tips.slice(newIndex, newIndex + 2));
       setTipIndex(newIndex);
     };
 
+    // Handle navigation to the previous two tips
     const handlePreviousTips = () => {
       const newIndex = tipIndex - 2 >= 0 ? tipIndex - 2 : 0;
       setVisibleTips(tips.slice(newIndex, newIndex + 2));

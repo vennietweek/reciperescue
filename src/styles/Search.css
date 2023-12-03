@@ -80,6 +80,7 @@
 
 .ingredient p {
     display: inline;
+    padding-right: 5px;
 }
 
 .ingredient i {

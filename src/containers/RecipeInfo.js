@@ -7,6 +7,7 @@ import { faFire } from '@fortawesome/free-solid-svg-icons'
 import { faClock} from '@fortawesome/free-regular-svg-icons'
 import Chip from '@mui/material-next/Chip'; 
 
+// Recipe Information Container
 export function RecipeInfo (props) {
   const { recipe } = props; 
   return (

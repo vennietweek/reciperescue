@@ -1,5 +1,10 @@
 /* CustomSearchBox.css */
 
+.custom-search-box-page {
+  background-color: #ffffff;
+  padding-bottom: 50px;
+}
+
 .custom-search-box {
   position: relative;
   display: inline-block;
@@ -20,7 +25,7 @@ input[type="text"], input[type="number"] {
 input::file-selector-button {
   padding: 0.5em;
   border: none;
-  border-radius: 20px;
+  border-radius: 5px;
   color: white;
   background-color: var(--primary-color);
 }  
@@ -57,7 +62,7 @@ background-color: var(--primary-color);
 color: #fff;
 border: none;
 cursor: pointer;
-border-radius: 20px
+border-radius: 5px
 }
 
 .submit-button {
@@ -193,11 +198,11 @@ align-self: flex-end;
 margin: 0px;
 font-size: 14px;
 background: white;
-color: #000;
-border: 1px solid var(primary-color);
+color: var(--primary-color);
+border: 1px solid var(--primary-color);
 padding: 2px 4px;
 cursor: pointer;
-border-radius: 20px
+border-radius: 5px
 }
 
 .select-button:hover {
@@ -215,10 +220,10 @@ cursor: not-allowed; /* Example: show a 'not allowed' cursor */
 .x-button {
 align-self: flex-end;
 margin: 0px;
-font-size: 14px;
+font-size: 16px;
 background: white;
 color: #000;
-border: 1px solid var(primary-color);
+border: 0px;
 padding: 2px 4px;
 cursor: pointer;
 border-radius: 0px
@@ -228,8 +233,6 @@ border-radius: 0px
 background-color: var(--secondary-color);
 color: white;
 }
-
-
 
 .custom-form {
   width: 100%; /* Adjust the width as needed */
@@ -260,4 +263,62 @@ color: white;
   box-sizing: border-box;
   margin-top: 3px;
   margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 15px;
+  min-height: 40px; 
+  max-height: 40px; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; 
+  line-height: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+}
+
+.carousel-item:last-child .carousel-card {
+  margin-right: 0;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  color: grey; 
+  opacity: 1; 
+  width: 4%; 
+  z-index: 5; 
+  text-decoration: none;
+  font-size: 35px;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  color: grey; 
+  opacity: 1; 
+  width: 4%; 
+  z-index: 5; 
+  text-decoration: none;
+  font-size: 35px;
+  background-color: #f0f0f0;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-image: none; 
+  text-decoration: none;
+}
+
+.carousel-control-prev-icon:before {
+  content: '\f104'; 
+  font-family: 'FontAwesome';
+  text-decoration: none;
+  color: #8b8989; 
+}
+
+.carousel-control-next-icon:before {
+  content: '\f105';
+  font-family: 'FontAwesome';
+  text-decoration: none;
+  color: #8b8989; 
 }
