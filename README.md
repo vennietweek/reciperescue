@@ -1,25 +1,12 @@
-# Introduction #
-## Motivation ##
+# Project Information
 
-In today's fast-paced world, many individuals struggle with meal planning and optimising the use of ingredients they already have. Everyday, many face the same conundrum about what to cook and whether they have the groceries to do so. This is compounded by the desire for efficient and cost-effective cooking, in order to save time, reduce food waste and control grocery expenses. To address this challenge, we introduce "Recipe Rescue," a comprehensive culinary app designed to simplify meal planning, reduce food waste, and provide users with a cost-conscious approach to cooking.
+**Demo Video**: https://youtu.be/cTAuM-L-vf8
 
-## Objectives ##
+**Project Report**: https://docs.google.com/document/d/1gIaefDHC8ORelAfmzk4qbDVxrx48ZdpkaZWmFa3oGFk/edit?usp=sharing
 
-Our objectives are thus to:
-Enhance a user's meal planning process by providing tools and features that improve convenience, efficiency, cost-effectiveness and nutrition.
-Streamline meal-prepping with a user-friendly journey through the meal planning process, from recipe selection to estimating ingredient costs and generating shopping lists.
+**Application specifications**: [Recipe Rescue PRD.pdf](https://github.com/IT5007-2310/course-project-reciperescue/files/12909002/Recipe.Rescue.PRD.pdf)
 
-## Target Audience ##
-
-"Recipe Rescue" caters to a broad audience, including busy professionals, students, families, and anyone looking for convenient and cost-effective meal planning solutions. Its focus will be on the local Singaporean population, offering ingredient cost estimations derived from leading supermarkets in Singapore.
-
-## Current Market Overview and Competitor Analysis ##
-
-The culinary and food tech market is thriving, with an increasing number of people showing interest in cooking at home. Popular apps like Yummly, Tasty, and AllRecipes provide recipe recommendations but often lack features like cost estimation, automatic shopping list generation, as well as geo-specific features. Competing apps primarily focus on recipe discovery but may not offer a comprehensive solution for ingredient-based recommendations, customizable serving sizes, and cost estimation. "Recipe Rescue" aims to fill this gap by combining these features into a single, user-friendly app.
-
-## Relevance in 5-10 Years ##
-
-"Recipe Rescue" is positioned to remain highly relevant in the coming years for several reasons. The trend of cooking at home is expected to persist, driven by health concerns, budget-consciousness, and the desire for personalised meals. As global awareness of food waste and sustainability grows, apps that help users make the most of their ingredients will be in demand. Furthermore, over the next decade, advances in AI and machine learning will enable even more sophisticated recipe recommendations, customization, and cost estimations. Busy lifestyles and changing work environments may lead to a greater reliance on technology for meal planning and cooking, making apps like "Recipe Rescue" essential.
+**Wireframes**: https://whimsical.com/recipe-rescue-lofi-wireframes-FFpDajuwzxosZFSmmSsHrL
 
 # Key Features
 
@@ -45,11 +32,3 @@ The culinary and food tech market is thriving, with an increasing number of peop
 * **Fairprice Website Scraping**: Scrap the Fairprice Website (a local supermarket) to obtain list of items available for specific ingredients, using a NLP package to parse the ingredients to extract a specific item. Identify the specific portion in the website that we would want to extract for our shopping list feature. Also built in function to eliminate bugs from the scrapper (e.g. some data cannot be scrapped if part of the webpage is not loaded)
 * **Data caching**: Caching of data called by both APIs and scraper into our database so that it will reduce loading time for repeated loading of similar data.
 * **Database**: Database to (1) save ingredients in recipe so that it could be pulled for display in shopping list (2) save manually added ingredients to shopping list
-
-# System Design and Wireframes
-
-**Application specifications**: [Recipe Rescue PRD.pdf](https://github.com/IT5007-2310/course-project-reciperescue/files/12909002/Recipe.Rescue.PRD.pdf)
-
-**Wireframes**: https://whimsical.com/recipe-rescue-lofi-wireframes-FFpDajuwzxosZFSmmSsHrL
-
-**Project Report**: https://docs.google.com/document/d/1gIaefDHC8ORelAfmzk4qbDVxrx48ZdpkaZWmFa3oGFk/edit?usp=sharing
