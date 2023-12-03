@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { HomePage } from './pages/HomePage.js';
 import { RecipeInfoPage } from './pages/RecipeInfoPage.js';
 import { ShoppingListPage } from './pages/ShoppingListPage.js';
+import { ErrorPage } from './pages/ErrorPage.js';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<HomePage/>} />
         <Route path="/shopping_list" element={<ShoppingListPage/>} />
         <Route path ="/recipe/:id" element={<RecipeInfoPage/>} />
+        <Route path="*" element={<ErrorPage/>} />
       </Routes>
     </Router>
   );
