@@ -319,13 +319,13 @@ app.get('/api/recipeGet', async (req, res) => {
 
       data.extendedIngredients.forEach(async (ingredient) => {
         // to clean up the list for duplicate ingredients in the recipe
-        if (!ingredientlist.includes(ingredient.originalName)) {
-          ingredientlist.push(ingredient.originalName);
+        if (!ingredientlist.includes(ingredient.nameClean)) {
+          ingredientlist.push(ingredient.nameClean);
           ingredientAmounts.push(ingredient.amount.toString() + ' ' + ingredient.unit);
         }
-        const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
+        const existing = await ingredImg.findOne({ dbingredient: ingredient.nameClean });
         if (!existing) {
-          const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
+          const newIngred = new ingredImg({ dbingredient: ingredient.nameClean, image: imageURL.concat(ingredient.image) });
           await newIngred.save();
         }
       });
@@ -501,7 +501,7 @@ app.get('/api/getFairpriceItems', async (req, res) => {
     const searchTerm = req.query.searchTerm;
     const cleanSearchTerm = findNouns(searchTerm);
     console.log(cleanSearchTerm);
-    //Check if we have already scrap Fariprice before, if so retrieve from database
+    //Check if we have already scrap Fairprice before, if so retrieve from database
     const check = await fairpriceItems.findOne({ search: cleanSearchTerm });
     console.log(check);
     if ( check ) {  
