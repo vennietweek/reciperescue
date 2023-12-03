@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import '../styles/RecipeInfo.css';
 
+// Recipe Instructions Container
 export function RecipeInstructions(props) {
     const { instructions } = props;
     return (

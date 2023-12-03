@@ -124,7 +124,7 @@ export function RecipeIngredients(props) {
                 className={unitSystem === 'metric' ? 'ingredient-convert-button-active' : 'ingredient-convert-button-inactive'}
                 onClick={() => handleUnitChange('metric')}
               >
-                Metric (g)
+                Metric
               </Button>
             </ButtonGroup>
           </div>

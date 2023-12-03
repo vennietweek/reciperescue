@@ -11,6 +11,14 @@ body {
     padding-bottom: 50px;
 }
 
+.recipe-not-found {
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    background-color: #ffffff;
+    font-size: 16px;
+}
+
 .recipe-detail-container {
     padding-top: 30px;
     padding-left: 30px;

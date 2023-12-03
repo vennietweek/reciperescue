@@ -5,6 +5,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import Modal from 'react-modal';
 import '../styles/CustomSearchBox.css'
+import { Carousel, Card, Button } from 'react-bootstrap';
 
 var openModalId = ''
 
@@ -269,6 +270,7 @@ function CustomSearchBox() {
         <p>Ingredient: {original_name} {measurement}</p>
         <p>Quantity: {qty}</p>
         <br />
+        
         <p>You are looking to purchase:</p>
         {listingqty ? (
           <p>Item: {name} {listingqty}</p>
@@ -335,39 +337,43 @@ function CustomSearchBox() {
     try {
       openModal('loading')
       const response = await fetch(`http://localhost:4000/api/getFairpriceItems?searchTerm=${encodeURIComponent(listingIngredient)}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
       const data = await response.json();
       if (data.length > 0) {
-        const items = data.map(item => (
-          <tr key={item.name}>
-            <td>{item.name}</td>
-            <td>{item.quantity}</td>
-            <td>{item.price}</td>
-            <td>
-              <button className="select-button" onClick={() => handleSelectPrice(listingId, `${item.name}`, `${item.quantity}`, `${item.price}`, `${item.image}`, listingIngredient, listingMeasurement, listingQuantity)}>
-                Select
-              </button>
-            </td>
-          </tr>
+        const groupedItems = [];
+            for (let i = 0; i < data.length; i += 4) {
+                groupedItems.push(data.slice(i, i + 4));
+            }
+        const carouselItems = groupedItems.map((group, index) => (
+          <Carousel.Item className='carousel-item' key={index}>
+              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                  {group.map((item, idx) => (
+                      <Card className="carousel-card" key={idx} style={{ width: '18rem', marginRight: '15px' }} >
+                          <Card.Img variant="top" src={item.image} style = {{ height: '15rem', width: '15rem'}}/>
+                          <Card.Body style={{ backgroundColor: '#f8f8f8' }}>
+                              <Card.Title className="card-title">{item.name}</Card.Title>
+                              <Card.Text style={{ fontSize: '14px'}}>
+                                  Price: {item.price}<br />
+                                  Quantity: {item.quantity}
+                              </Card.Text>
+                              <Button className="select-button" onClick={() => {
+                                  handleSave(listingId, item.name, item.price, item.image, item.quantity, listingQuantity); 
+                              }}>
+                                  Select
+                              </Button>
+                          </Card.Body>
+                      </Card>
+                  ))}
+              </div>
+          </Carousel.Item>
         ));
-        
+                
         if (openModalId === modalId) {
           setModalContent(
-            <table width="100%">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items}
-              </tbody>
-            </table>
+            <>
+            <Carousel className='carousel' interval={null} indicators={false}>
+            {carouselItems}
+            </Carousel>
+            </>
           );
         }
 
@@ -482,9 +488,11 @@ function CustomSearchBox() {
       >
         <div>
           <button className="x-button" onClick={closeModal} style={{ float: 'right' }}>X</button>
-          <h2>Price Information:</h2>
+          <h2>Price Information</h2>
           {modalContent === 'loading' ? (
-            <center><FontAwesomeIcon icon={faSpinner} spin size="3x" style={{ color: '#0D6EFD' }} /></center>
+            <div className='custom-search-box-page d-flex justify-content-center align-items-center' style={{ height: '80vh' }}>
+            <center><FontAwesomeIcon icon={faSpinner} spin size="2x" style={{ color: '#0D6EFD' }} /></center>
+            </div>
           ) : (
             <div>{modalContent}</div>
           )}
