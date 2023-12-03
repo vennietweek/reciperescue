@@ -498,13 +498,10 @@ function findNouns(phrase) {
 
 app.get('/api/getFairpriceItems', async (req, res) => {
   try {
-    console.log(req.query.searchTerm);
     const searchTerm = req.query.searchTerm;
     const cleanSearchTerm = findNouns(searchTerm);
-    console.log(cleanSearchTerm);
     //Check if we have already scrap Fairprice before, if so retrieve from database
     const check = await fairpriceItems.findOne({ search: cleanSearchTerm });
-    console.log(check);
     if ( check ) {  
       res.json( check.productList );
     } else {
