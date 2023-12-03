@@ -10,7 +10,6 @@ import Chip from '@mui/material-next/Chip';
 // Recipe Information Container
 export function RecipeInfo (props) {
   const { recipe } = props; 
-  console.log(recipe);
   return (
     <>
     <div className='recipe-image-container'>

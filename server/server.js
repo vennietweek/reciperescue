@@ -337,10 +337,10 @@ app.get('/api/recipeGet', async (req, res) => {
         image: data.image,
         servingSize: data.servings,
         description: data.summary.split('.')[0].replace(/<[^>]*>/g, '') + '.',
-        isVegetarian: data.vegetarian,
-        isVegan: data.vegan,
-        isDairyFree: data.dairyFree,
-        isGlutenFree: data.glutenFree,
+        isVegetarian: data.vegetarian.toString(),
+        isVegan: data.vegan.toString(),
+        isDairyFree: data.dairyFree.toString(),
+        isGlutenFree: data.glutenFree.toString(),
         totalCookingTime: data.readyInMinutes,
         calories: nutrition.calories,
         carbs: nutrition.carbs,
@@ -498,6 +498,7 @@ function findNouns(phrase) {
 
 app.get('/api/getFairpriceItems', async (req, res) => {
   try {
+    console.log(req.query.searchTerm);
     const searchTerm = req.query.searchTerm;
     const cleanSearchTerm = findNouns(searchTerm);
     console.log(cleanSearchTerm);
