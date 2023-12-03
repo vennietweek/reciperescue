@@ -314,7 +314,15 @@ app.get('/api/recipeGet', async (req, res) => {
 
       const imageURL = "https://spoonacular.com/cdn/ingredients_250x250/";
 
+      ingredientlist = [];
+      ingredientAmounts = [];
+
       data.extendedIngredients.forEach(async (ingredient) => {
+        // to clean up the list for duplicate ingredients in the recipe
+        if (!ingredientlist.includes(ingredient.originalName)) {
+          ingredientlist.push(ingredient.originalName);
+          ingredientAmounts.push(ingredient.amount.toString() + ' ' + ingredient.unit);
+        }
         const existing = await ingredImg.findOne({ dbingredient: ingredient.originalName });
         if (!existing) {
           const newIngred = new ingredImg({ dbingredient: ingredient.originalName, image: imageURL.concat(ingredient.image) });
@@ -339,11 +347,11 @@ app.get('/api/recipeGet', async (req, res) => {
         fat: nutrition.fat,
         protein: nutrition.protein,
         instructions: data.instructions.replace(/<[^>]*>/g, '').split(/[.\n]/).filter((instruction) => { return instruction !== '' }),
-        ingredients: data.extendedIngredients.map((ingredient) => {
+        ingredients: ingredientlist.map((ingredient) => {
           counter++;
-          return { id: counter, name: ingredient.originalName };
+          return { id: counter, name: ingredient };
         }),
-        ingredientAmounts: data.extendedIngredients.map((ingredient) => ingredient.amount.toString() + ' ' + ingredient.unit),
+        ingredientAmounts: ingredientAmounts,
         tip: [],
       };
 
