@@ -41,7 +41,7 @@ The culinary and food tech market is thriving, with an increasing number of peop
   * (1) Getting a list of recipes,
   * (2) Getting the details within a specific recipe,
   * (3) Calling ChatGPT to request for tips on recipe,
-  * (4) Calling an api to convert the ingredients into grams.
+  * (4) Calling an API to convert the ingredients into grams.
 * **Fairprice Website Scraping**: Scrap the Fairprice Website (a local supermarket) to obtain list of items available for specific ingredients, using a NLP package to parse the ingredients to extract a specific item. Identify the specific portion in the website that we would want to extract for our shopping list feature. Also built in function to eliminate bugs from the scrapper (e.g. some data cannot be scrapped if part of the webpage is not loaded)
 * **Data caching**: Caching of data called by both APIs and scraper into our database so that it will reduce loading time for repeated loading of similar data.
 * **Database**: Database to (1) save ingredients in recipe so that it could be pulled for display in shopping list (2) save manually added ingredients to shopping list
