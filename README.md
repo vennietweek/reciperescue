@@ -1,5 +1,7 @@
 # Recipe Rescue
 
+### Project Information
+
 This was done for a school project for Software Engineering on Application Architecture. 
 
 Our objective was to allow users to:
@@ -12,8 +14,6 @@ My main contribution was the Recipe Information page, which included ChatGPT int
 
 I collaborated with @lmngxn (who worked on the backend and recipe search) and @e1101786 (who worked on the shopping list).
 
-# Project Information
-
 **Demo Video**: https://youtu.be/cTAuM-L-vf8
 
 **Project Report**: https://docs.google.com/document/d/1gIaefDHC8ORelAfmzk4qbDVxrx48ZdpkaZWmFa3oGFk/edit?usp=sharing
@@ -22,7 +22,7 @@ I collaborated with @lmngxn (who worked on the backend and recipe search) and @e
 
 **Wireframes**: https://whimsical.com/recipe-rescue-lofi-wireframes-FFpDajuwzxosZFSmmSsHrL
 
-# Key Features
+### Key Features
 
 **Home page**
 * **Browse Recipes**: Explore popular recipes
