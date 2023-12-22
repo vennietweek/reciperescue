@@ -1,3 +1,9 @@
+# Recipe Rescue
+
+This was done for a school project for Software Engineering on Application Architecture.
+
+I mostly worked on the Recipe Information page, which included ChatGPT integration, as well as overall UI improvements.
+
 # Project Information
 
 **Demo Video**: https://youtu.be/cTAuM-L-vf8
