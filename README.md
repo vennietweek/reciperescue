@@ -1,8 +1,16 @@
 # Recipe Rescue
 
-This was done for a school project for Software Engineering on Application Architecture.
+This was done for a school project for Software Engineering on Application Architecture. 
 
-I mostly worked on the Recipe Information page, which included ChatGPT integration, as well as overall UI improvements.
+Our objective was to allow users to:
+1. Browse for recipes based on ingredients they already have in their fridge
+2. Customise the ingredient amounts and measurement system
+3. Add the ingredients to a shopping list, and
+4. Select actual ingredients from Fairprice to compute the estimate the cost of the shopping list.
+
+My main contribution was the Recipe Information page, which included ChatGPT integration for recipe tips, ingredient customisation, and display of a recipe's information. I also helped with overall UI improvements to the recipe search page and the ingredient selection for the shopping list.
+
+I collaborated with @lmngxn (who worked on the backend and recipe search) and @e1101786 (who worked on the shopping list).
 
 # Project Information
 
